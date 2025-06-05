@@ -17,6 +17,9 @@ namespace market
             app.UseStaticFiles();
 
             app.UseMiddleware<RegistrationMiddleware>();
+            app.UseMiddleware<LogInMiddleware>();
+            app.UseMiddleware<MainMiddleware>();
+
 
             app.Run(async (context) =>
             {
@@ -25,18 +28,15 @@ namespace market
                 string regPath = "/Front/Registration/registration.html";
                 string logPath = "/Front/LogIn/logIn.html";
                 string mainPath = "/Front/Main/main.html";
+                PathString path = context.Request.Path;
 
-                string[] allPath = new string[3] { regPath, logPath, mainPath };
 
-
-                for (int i = 0; i < allPath.Length; i++)
+                if (path != regPath && path != logPath && path != mainPath)
                 {
-                    if(context.Request.Path != allPath[i])
-                    {
-                        context.Response.Redirect(mainPath);
-                        break;
-                    }
+                    context.Response.Redirect(mainPath);
+                    return;
                 }
+                    
 
                 await context.Response.WriteAsync("Ты что тут потерял?");
             });

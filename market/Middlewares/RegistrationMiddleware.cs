@@ -1,5 +1,4 @@
-﻿
-using market.DbContextFolder;
+﻿using market.DbContextFolder;
 using MyMarketLibrary.Models;
 
 namespace market.Middlewares
@@ -39,7 +38,7 @@ namespace market.Middlewares
         {
            using(MarketDbContext db = new MarketDbContext())
            {
-                var userId = request.Query["id"].ToString();
+                string userId = request.Query["id"].ToString();
 
                 User? user = db.users.FirstOrDefault(us => us.id == userId);
 
