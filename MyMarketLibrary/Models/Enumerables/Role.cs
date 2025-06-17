@@ -1,4 +1,4 @@
-﻿namespace MyMarketLibrary.Models
+﻿namespace MyMarketLibrary.Models.Enumerables
 {
     public enum Role
     {
