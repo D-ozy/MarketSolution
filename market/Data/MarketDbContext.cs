@@ -8,7 +8,7 @@ namespace market.DbContextFolder
         public DbSet<User> users { get; set; }
         public DbSet<Item> items { get; set; }
         public DbSet<Cart> carts { get; set; }
-        public DbSet<CartItem> carts_item { get; set; }
+        public DbSet<CartsItem> carts_item { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

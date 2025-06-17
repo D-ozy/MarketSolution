@@ -7,7 +7,7 @@ namespace MyMarketLibrary.Models
     {
         [Key]
         public string id { get; set; }
-        [ForeignKey("User")]
+        [ForeignKey("user")]
         public string user_id { get; set; }
         public DateTime CreatedDate { get; set; }
         public User user { get; set; }

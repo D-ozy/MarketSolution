@@ -22,6 +22,10 @@ namespace market.Middlewares
             {
                 await GetUser(response, request);
             }
+            else if(path == "/main/item/add" && request.Method == "POST")
+            {
+                await AddItem(response, request);
+            }
             else
             {
                 await next.Invoke(context);
@@ -40,6 +44,16 @@ namespace market.Middlewares
                 {
                     await response.WriteAsJsonAsync(user);
                 }
+            }
+        }
+
+        private async Task AddItem(HttpResponse response, HttpRequest request)
+        {
+            string userIdStr = request.Headers["X-User-Id"];
+
+            using(MarketDbContext db = new MarketDbContext())
+            {
+                Cart cart = db.carts.FirstOrDefault(c => c.user_id == userIdStr);
             }
         }
     }

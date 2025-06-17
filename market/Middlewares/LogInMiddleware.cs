@@ -47,6 +47,8 @@ namespace market.Middlewares
 
                 if (foundUser != null)
                 {
+                    CreateUserCart(db ,foundUser.id);
+
                     response.Headers["X-User-Id"] = foundUser.id.ToString();
 
                     await response.WriteAsJsonAsync(foundUser);
@@ -56,6 +58,16 @@ namespace market.Middlewares
                     response.StatusCode = 404;
                     await response.WriteAsJsonAsync(new { message = "Incorrect data" });
                 }
+            }
+        }
+
+        private void CreateUserCart(MarketDbContext db, string userId)
+        {
+            if(!db.carts.Any(c => c.user_id == userId))
+            {
+                Cart cart = new Cart() { id = Guid.NewGuid().ToString(), CreatedDate = DateTime.Now, user_id = userId };
+                db.carts.Add(cart);
+                db.SaveChanges();
             }
         }
     }
