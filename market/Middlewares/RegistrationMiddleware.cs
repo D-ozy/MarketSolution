@@ -69,9 +69,15 @@ namespace market.Middlewares
                     }
                     else
                     {
+                        response.StatusCode = 409;
                         await response.WriteAsJsonAsync(new { message = "This login or email is exist" });
                     }
                 }
+            }
+            else
+            {
+                response.StatusCode = 400;
+                await response.WriteAsJsonAsync(new { message = "Invalid user data" });
             }
         }
 

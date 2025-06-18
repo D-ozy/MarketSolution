@@ -2,30 +2,33 @@
 const password = document.getElementById('password');
 const confirmPassword = document.getElementById('confirmPassword');
 const errorMessage = document.getElementById('error-message');
+const successMessage = document.getElementById('success-message');
 
 form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
+    // Сброс сообщений
+    errorMessage.textContent = "";
+    successMessage.textContent = "";
+
     if (password.value !== confirmPassword.value) {
-        errorMessage.textContent = "Passwords do not match";
+        errorMessage.textContent = "Пароли не совпадают";
         return;
     }
 
-    errorMessage.textContent = "";
-
     const user = {
-        login: document.getElementById('login').value,
-        email: document.getElementById('email').value,
+        login: document.getElementById('login').value.trim(),
+        email: document.getElementById('email').value.trim(),
         password: password.value
     };
 
     try {
         const registeredUser = await registerUser(user);
-        alert("Регистрация успешна! ID: " + registeredUser.id);
-        // redirect, save to localStorage, etc.
+        successMessage.textContent = "Регистрация успешна!";
+        form.reset();
     } catch (error) {
-        console.error(error);
-        errorMessage.textContent = "Ошибка при регистрации. Попробуйте снова.";
+        console.error("Ошибка регистрации:", error);
+        errorMessage.textContent = error.message;
     }
 });
 
@@ -38,19 +41,16 @@ async function registerUser(userData) {
         body: JSON.stringify(userData)
     });
 
-    if (!response.ok) {
-        throw new Error("Ошибка при регистрации пользователя");
+    let data;
+    try {
+        data = await response.json();
+    } catch {
+        throw new Error("Ошибка разбора ответа сервера");
     }
 
-    return await response.json();
-}
-
-async function getUserById(userId) {
-    const response = await fetch(`https://localhost:7067/registration/user/get?id=${encodeURIComponent(userId)}`);
-
     if (!response.ok) {
-        throw new Error("Пользователь не найден");
+        throw new Error(data.message || "Ошибка при регистрации пользователя");
     }
 
-    return await response.json();
+    return data;
 }

@@ -1,15 +1,15 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Log In - TechStore</title>
-    <link rel="stylesheet" href="logIn.css">
+    <link rel="stylesheet" href="logIn.css" />
 </head>
 <body>
 
     <div class="login-container">
         <h2>Log In to TechStore</h2>
-        <form action="#" method="post">
+        <form id="loginForm" action="#" method="post">
             <div class="form-group">
                 <label for="loginOrEmail">Login/Email</label>
                 <input type="text" id="loginOrEmail" name="loginOrEmail" required />
@@ -18,6 +18,11 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required />
             </div>
+
+            <!-- Новые элементы для сообщений -->
+            <div id="error-message" class="message error"></div>
+            <div id="success-message" class="message success"></div>
+
             <button type="submit" class="login-btn">Log In</button>
         </form>
         <p>Don't have an account? <a href="/Front/Registration/registration.html">Register</a></p>

@@ -1,15 +1,19 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector("form");
+    const form = document.querySelector("#loginForm");
+    const errorMessage = document.getElementById("error-message");
+    const successMessage = document.getElementById("success-message");
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        errorMessage.textContent = "";
+        successMessage.textContent = "";
 
         const loginOrEmail = document.getElementById("loginOrEmail").value;
         const password = document.getElementById("password").value;
 
         const body = JSON.stringify({
-            login: loginOrEmail, // будем использовать это поле как login/email
-            email: loginOrEmail, // чтобы сервер смог проверить и по email
+            login: loginOrEmail,
+            email: loginOrEmail,
             password: password
         });
 
@@ -24,20 +28,19 @@
 
             if (response.ok) {
                 const user = await response.json();
-                alert(`Пользователь найден: ${user.login || user.email}`);
-
-                // Можно сохранить ID, если нужно
+                successMessage.textContent = `Welcome, ${user.login || user.email}!`;
                 localStorage.setItem("userId", user.id);
 
-                // Переход на главную страницу
-                window.location.href = "/Front/Home/home.html"; // <-- измени путь при необходимости
+                setTimeout(() => {
+                    window.location.href = "/Front/Home/home.html";
+                }, 1000);
             } else {
                 const error = await response.json();
-                alert(error.message || "Неверный логин или пароль.");
+                errorMessage.textContent = error.message || "Incorrect login or password.";
             }
         } catch (err) {
-            console.error("Ошибка входа:", err);
-            alert("Произошла ошибка. Попробуйте позже.");
+            console.error("Login error:", err);
+            errorMessage.textContent = "An error occurred. Please try again later.";
         }
     });
 });
