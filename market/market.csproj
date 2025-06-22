@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\Front\Main\Ico\Game console.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\Headphone.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\Laptop.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\Monitor.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\PC.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\Phone.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\Refrigerator.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\TV.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\UPS.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\Vacuum cleaner.png" />
+    <Content Remove="wwwroot\Front\Main\Ico\Washing machine.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
       <PrivateAssets>all</PrivateAssets>
@@ -21,6 +35,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Front\Main\Ico\Game console.png" />
+    <None Include="wwwroot\Front\Main\Ico\Headphone.png" />
+    <None Include="wwwroot\Front\Main\Ico\Laptop.png" />
+    <None Include="wwwroot\Front\Main\Ico\Monitor.png" />
+    <None Include="wwwroot\Front\Main\Ico\PC.png" />
+    <None Include="wwwroot\Front\Main\Ico\Phone.png" />
+    <None Include="wwwroot\Front\Main\Ico\Refrigerator.png" />
+    <None Include="wwwroot\Front\Main\Ico\TV.png" />
+    <None Include="wwwroot\Front\Main\Ico\UPS.png" />
+    <None Include="wwwroot\Front\Main\Ico\Vacuum cleaner.png" />
+    <None Include="wwwroot\Front\Main\Ico\Washing machine.png" />
     <None Include="wwwroot\Front\Main\main.html" />
     <None Include="wwwroot\Front\Registration\registration.html" />
     <None Include="wwwroot\Front\LogIn\logIn.html" />

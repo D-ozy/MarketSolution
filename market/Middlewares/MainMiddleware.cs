@@ -31,7 +31,7 @@ namespace market.Middlewares
             }
             else if(Regex.IsMatch(path, expressionForGuid) && request.Method == "POST")
             {
-                string? id = path.Value?.Split("/")[3];
+                string? id = path.Value?.Split("/")[4];
                 await AddItem(response, request, id);
             }
             else
@@ -58,8 +58,7 @@ namespace market.Middlewares
         private async Task GetAllItems(HttpResponse response)
         {
             using(MarketDbContext db = new MarketDbContext())
-            
-
+            { 
                 await response.WriteAsJsonAsync(db.items);
             }
         }
@@ -88,7 +87,7 @@ namespace market.Middlewares
                     return;
                 }
 
-                var existingItem = db.carts_item.FirstOrDefault(ci => ci.cart_id == cart.id && ci.item_id == itemId);
+                CartsItem existingItem = db.carts_item.FirstOrDefault(ci => ci.cart_id == cart.id && ci.item_id == itemId);
 
                 if (existingItem != null)
                 {

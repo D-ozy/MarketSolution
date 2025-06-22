@@ -2,6 +2,16 @@
     const profileLink = document.querySelector(".profile-icon a");
     const userId = localStorage.getItem("userId");
 
+    // Показ уведомления
+    function showNotification(message) {
+        const notif = document.getElementById("notification");
+        notif.textContent = message;
+        notif.classList.add("show");
+        setTimeout(() => {
+            notif.classList.remove("show");
+        }, 1000);
+    }
+
     // Получение пользователя
     if (userId) {
         try {
@@ -43,15 +53,59 @@
         items.forEach(item => {
             const card = document.createElement("div");
             card.classList.add("product-card");
+            card.setAttribute("data-id", item.id); // id - должен быть GUID
+
+            const iconHTML = item.ico && item.ico.trim() !== ""
+                ? `<img src="${item.ico}" alt="${item.name}" class="product-img" style="max-height: 150px; object-fit: contain; margin-bottom: 20px;" />`
+                : `<div class="product-icon">📦</div>`;
 
             card.innerHTML = `
-                <div class="product-icon">${item.ico || "📦"}</div>
+                ${iconHTML}
                 <div class="product-name">${item.name}</div>
                 <button class="buy-btn">Buy Now</button>
             `;
 
             productGrid.appendChild(card);
         });
+
+        // Обработчик клика на кнопку "Buy Now"
+        productGrid.addEventListener("click", async (event) => {
+            if (!event.target.classList.contains("buy-btn")) return;
+
+            const card = event.target.closest(".product-card");
+            if (!card) return;
+
+            const itemId = card.getAttribute("data-id");
+            if (!itemId) {
+                console.error("Не найден itemId для товара");
+                return;
+            }
+
+            if (!userId) {
+                showNotification("Пожалуйста, войдите в аккаунт");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/main/item/add/${itemId}`, {
+                    method: "POST",
+                    headers: {
+                        "X-User-Id": userId
+                    }
+                });
+
+                if (response.ok) {
+                    showNotification("Товар добавлен в корзину");
+                } else {
+                    const err = await response.json();
+                    showNotification("Ошибка: " + (err.message || response.statusText));
+                }
+            } catch (err) {
+                console.error("Ошибка сети:", err);
+                showNotification("Ошибка сети");
+            }
+        });
+
     } catch (err) {
         console.error("Ошибка при получении товаров:", err);
     }

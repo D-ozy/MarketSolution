@@ -92,3 +92,26 @@ main {
     .buy-btn:hover {
         background: #2563eb;
     }
+
+
+
+.notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+    z-index: 999;
+}
+
+    .notification.show {
+        opacity: 1;
+        bottom: 50px;
+    }
