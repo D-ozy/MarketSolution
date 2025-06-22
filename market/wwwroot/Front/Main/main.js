@@ -2,7 +2,7 @@
     const profileLink = document.querySelector(".profile-icon a");
     const userId = localStorage.getItem("userId");
 
-    // Если userId есть, получаем пользователя
+    // Получение пользователя
     if (userId) {
         try {
             const userResponse = await fetch("/main/user/get", {
@@ -14,7 +14,6 @@
 
             if (userResponse.ok) {
                 const user = await userResponse.json();
-
                 if (user && user.login) {
                     profileLink.textContent = user.login;
                 }
@@ -24,7 +23,7 @@
         }
     }
 
-    // Получаем все товары
+    // Получение и отображение товаров
     try {
         const itemsResponse = await fetch("/main/item/get", {
             method: "GET"
@@ -37,6 +36,22 @@
 
         const items = await itemsResponse.json();
         console.log("Список товаров:", items);
+
+        const productGrid = document.querySelector(".product-grid");
+        productGrid.innerHTML = ""; // Очистить содержимое
+
+        items.forEach(item => {
+            const card = document.createElement("div");
+            card.classList.add("product-card");
+
+            card.innerHTML = `
+                <div class="product-icon">${item.ico || "📦"}</div>
+                <div class="product-name">${item.name}</div>
+                <button class="buy-btn">Buy Now</button>
+            `;
+
+            productGrid.appendChild(card);
+        });
     } catch (err) {
         console.error("Ошибка при получении товаров:", err);
     }

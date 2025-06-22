@@ -11,5 +11,6 @@ namespace MyMarketLibrary.Models
         public int quantity { get; set; }
         public decimal price { get; set; }
         public string brand { get; set; }
+        public string ico { get; set; }
     }
 }

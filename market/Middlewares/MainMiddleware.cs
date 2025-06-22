@@ -58,7 +58,8 @@ namespace market.Middlewares
         private async Task GetAllItems(HttpResponse response)
         {
             using(MarketDbContext db = new MarketDbContext())
-            {
+            
+
                 await response.WriteAsJsonAsync(db.items);
             }
         }
