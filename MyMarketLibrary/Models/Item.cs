@@ -12,5 +12,6 @@ namespace MyMarketLibrary.Models
         public decimal price { get; set; }
         public string brand { get; set; }
         public string ico { get; set; }
+        public string specifications { get; set; }
     }
 }

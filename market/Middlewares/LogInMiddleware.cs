@@ -49,7 +49,13 @@ namespace market.Middlewares
                 {
                     CreateUserCart(db ,foundUser.id);
 
-                    response.Headers["X-User-Id"] = foundUser.id.ToString();
+                    response.Cookies.Append("UserId", foundUser.id.ToString(), new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true, // отключи на локалке, если не используешь HTTPS
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTimeOffset.UtcNow.AddDays(7)
+                    });
 
                     await response.WriteAsJsonAsync(foundUser);
                 }

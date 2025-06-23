@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Product Details</title>
+    <link rel="stylesheet" href="product.css" />
+</head>
+<body>
+
+    <header>
+        <div></div> <!-- пустой блок для выравнивания слева -->
+        <div class="store-title">TechStore</div>
+        <div class="profile-icon" title="Profile"><a href="/Front/LogIn/logIn.html" style="text-decoration: none; color: rgb(1, 69, 255)">Log in </a> 👤</div>
+    </header>
+
+    <main>
+        <div id="content-wrapper">
+            <div id="product-container">
+                <img id="product-image" alt="Product image" />
+                <div id="product-info">
+                    <h1 id="product-name"></h1>
+                    <h2 id="product-type"></h2>
+                    <div id="product-specifications"></div>
+                    <button id="buy-now">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="product.js"></script>
+
+    <div id="notification" class="notification"></div>
+
+</body>
+</html>

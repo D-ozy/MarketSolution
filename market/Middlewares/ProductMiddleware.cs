@@ -1,14 +1,13 @@
 ﻿using market.DbContextFolder;
 using MyMarketLibrary.Models;
-using System.Text.RegularExpressions;
 
 namespace market.Middlewares
 {
-    public class MainMiddleware
+    public class ProductMiddleware
     {
         private readonly RequestDelegate next;
 
-        public MainMiddleware(RequestDelegate next)
+        public ProductMiddleware(RequestDelegate next)
         {
             this.next = next;
         }
@@ -19,20 +18,17 @@ namespace market.Middlewares
             HttpRequest request = context.Request;
             PathString path = request.Path;
 
-            string expressionForGuid = @"^/main/item/add/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$";
-
-            if (path == "/main/user/get" && request.Method == "GET")
+            if (path == "/product/user/get" && request.Method == "GET")
             {
                 await GetUser(response, request);
             }
-            else if(path == "/main/item/get" && request.Method == "GET")
+            else if (path == "/product/item/get" && request.Method == "GET")
             {
-                await GetAllItems(response);
+                await GetItem(response, request);
             }
-            else if(Regex.IsMatch(path, expressionForGuid) && request.Method == "POST")
+            else if (path == "/product/item/add" && request.Method == "POST")
             {
-                string? id = path.Value?.Split("/")[4];
-                await AddItem(response, request, id);
+                await AddItem(response, request);
             }
             else
             {
@@ -40,10 +36,27 @@ namespace market.Middlewares
             }
         }
 
+        private async Task GetItem(HttpResponse response, HttpRequest request)
+        {
+            var itemId = request.Query["id"].ToString();
+
+            using(MarketDbContext db = new MarketDbContext())
+            {
+                Item item = db.items.FirstOrDefault(i => i.id == itemId);
+
+                if(item != null)
+                {
+                    await response.WriteAsJsonAsync(item);
+                }
+            }
+        }
+
         private async Task GetUser(HttpResponse response, HttpRequest request)
         {
             string? userIdStr = request.Cookies["UserId"];
 
+
+            Console.WriteLine(userIdStr);
 
             using (MarketDbContext db = new MarketDbContext())
             {
@@ -56,24 +69,16 @@ namespace market.Middlewares
             }
         }
 
-        private async Task GetAllItems(HttpResponse response)
-        {
-            using(MarketDbContext db = new MarketDbContext())
-            { 
-                await response.WriteAsJsonAsync(db.items);
-            }
-        }
-
-        private async Task AddItem(HttpResponse response, HttpRequest request, string? itemId)
+        private async Task AddItem(HttpResponse response, HttpRequest request)
         {
             string? userIdStr = request.Cookies["UserId"];
-
+            string itemId = request.Query["id"].ToString();
 
             using (MarketDbContext db = new MarketDbContext())
             {
                 Cart cart = db.carts.FirstOrDefault(c => c.user_id == userIdStr);
 
-                if(cart == null)
+                if (cart == null)
                 {
                     response.StatusCode = 404;
                     await response.WriteAsJsonAsync(new { message = "The cart does not exist" });
@@ -103,9 +108,6 @@ namespace market.Middlewares
 
                 db.SaveChanges();
 
-                response.StatusCode = 200;
-
-                Console.WriteLine("Item added to cart");
             }
         }
     }
