@@ -20,6 +20,7 @@ namespace market
             app.UseMiddleware<LogInMiddleware>();
             app.UseMiddleware<MainMiddleware>();
             app.UseMiddleware<ProductMiddleware>();
+            app.UseMiddleware<AccountMiddleware>();
 
             app.Run(async (context) =>
             {
@@ -29,10 +30,11 @@ namespace market
                 string logPath = "/Front/LogIn/logIn.html";
                 string mainPath = "/Front/Main/main.html";
                 string productPath = "/Front/Product/product.html";
+                string accountPath = "/Front/Account/account.html";
                 PathString path = context.Request.Path;
 
 
-                if (path != regPath && path != logPath && path != mainPath && path != productPath)
+                if (path != regPath || path != logPath || path != mainPath || path != productPath || path != accountPath)
                 {
                     context.Response.Redirect(mainPath);
                     return;

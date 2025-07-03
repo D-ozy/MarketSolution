@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Cabinet</title>
+    <link rel="stylesheet" href="account.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TechStore</h1>
+            <div class="user-panel">
+                <span class="user-info">Hello, <span id="username">user2</span></span>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="account-section">
+                <h2>Account Settings</h2>
+                <div class="account-info">
+                    <p><strong>Login:</strong> <span id="info-login">...</span></p>
+                    <p><strong>Email:</strong> <span id="info-email">...</span></p>
+                    <p><strong>Password:</strong> <span id="info-password">********</span></p>
+                    <button class="edit-btn">Update</button>
+                </div>
+            </section>
+
+            <!-- Модальное окно -->
+            <div class="modal hidden" id="edit-modal">
+                <div class="modal-content">
+                    <h3>Edit Account</h3>
+                    <form id="edit-form">
+                        <label for="edit-login">Login</label>
+                        <input type="text" id="edit-login" />
+
+                        <label for="edit-email">Email</label>
+                        <input type="email" id="edit-email" />
+
+                        <label for="edit-password">Password</label>
+                        <input type="password" id="edit-password" />
+
+                        <div class="modal-actions">
+                            <button type="submit">Save</button>
+                            <button type="button" class="cancel-btn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <section class="cart-section">
+                <h2>Your Cart</h2>
+                <div class="cart-items">
+                    <div class="item-card">
+                        <img src="https://img.icons8.com/color/96/vacuum-cleaner.png" alt="T30" />
+                        <span>T30</span>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://img.icons8.com/color/96/laptop.png" alt="Redmibook" />
+                        <span>Redmibook Pro 14</span>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://img.icons8.com/color/96/play-station.png" alt="PS4" />
+                        <span>Playstation 4</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+    <script src="account.js"></script>
+</body>
+</html>

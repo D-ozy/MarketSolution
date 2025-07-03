@@ -1,5 +1,5 @@
 ﻿document.addEventListener("DOMContentLoaded", async () => {
-    const profileLink = document.querySelector(".profile-icon a");
+    const accountLink = document.querySelector(".profile-icon a");
     const userId = localStorage.getItem("userId");
 
     function showNotification(message) {
@@ -11,19 +11,27 @@
         }, 1000);
     }
 
+    // 🔽 Обработка перехода при клике на иконку профиля
+    accountLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (userId) {
+            window.location.href = "/Front/Account/account.html";
+        } else {
+            window.location.href = "/Front/Login/login.html";
+        }
+    });
+
+    // 🔽 Попытка загрузить логин пользователя и вставить его в ссылку
     if (userId) {
         try {
             const userResponse = await fetch("/main/user/get", {
-                method: "GET",
-                headers: {
-                    "X-User-Id": userId
-                }
+                method: "GET"
             });
 
             if (userResponse.ok) {
                 const user = await userResponse.json();
                 if (user && user.login) {
-                    profileLink.textContent = user.login;
+                    accountLink.textContent = user.login;
                 }
             }
         } catch (err) {
@@ -31,6 +39,7 @@
         }
     }
 
+    // 🔽 Загрузка и отображение товаров
     try {
         const itemsResponse = await fetch("/main/item/get", {
             method: "GET"
@@ -66,6 +75,7 @@
             productGrid.appendChild(card);
         });
 
+        // 🔽 Обработка кликов по кнопкам на карточках товара
         productGrid.addEventListener("click", async (event) => {
             const card = event.target.closest(".product-card");
             if (!card) return;
@@ -80,16 +90,13 @@
 
             if (event.target.classList.contains("buy-btn")) {
                 if (!userId) {
-                    showNotification("Пожалуйста, войдите в аккаунт");
+                    showNotification("Please log in to your account");
                     return;
                 }
 
                 try {
                     const response = await fetch(`/main/item/add/${itemId}`, {
-                        method: "POST",
-                        headers: {
-                            "X-User-Id": userId
-                        }
+                        method: "POST"
                     });
 
                     if (response.ok) {
