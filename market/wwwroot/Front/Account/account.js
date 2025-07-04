@@ -3,8 +3,13 @@
     if (!res.ok) return;
     const user = await res.json();
 
-    document.querySelector('.login-text').textContent = user.login;
-    document.querySelector('.email-text').textContent = user.email;
+    document.getElementById('username').textContent = user.login;
+    document.getElementById('info-login').textContent = user.login;
+    document.getElementById('info-email').textContent = user.email;
+
+    // Optional: Подставить текущие данные в форму редактирования
+    document.getElementById('edit-login').value = user.login;
+    document.getElementById('edit-email').value = user.email;
 }
 
 async function loadCartItems() {
@@ -66,7 +71,7 @@ function setupRemoveButtons() {
 
 function logout() {
     document.cookie = "UserId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "/login";
+    window.location.href = "/Front/LogIn/logIn.html";
 }
 
 function openEditModal() {
