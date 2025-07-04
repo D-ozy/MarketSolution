@@ -1,111 +1,113 @@
-﻿let currentUser = null;
+﻿async function loadUserData() {
+    const res = await fetch('/account/user/get');
+    if (!res.ok) return;
+    const user = await res.json();
 
-// Загрузка данных пользователя
-async function loadUserData() {
-    try {
-        const res = await fetch('/account/user/get');
-        if (!res.ok) throw new Error('Failed to fetch user');
-
-        const user = await res.json();
-        currentUser = user;
-
-        document.getElementById('info-login').textContent = user.login;
-        document.getElementById('info-email').textContent = user.email || '(none)';
-        document.getElementById('info-password').textContent = '********';
-        document.getElementById('username').textContent = user.login;
-    } catch (err) {
-        console.error('Error loading user data:', err);
-    }
+    document.querySelector('.login-text').textContent = user.login;
+    document.querySelector('.email-text').textContent = user.email;
 }
 
-// Загрузка товаров корзины
 async function loadCartItems() {
-    try {
-        const response = await fetch('/account/item/get');
-        if (!response.ok) throw new Error('Failed to fetch cart items');
+    const res = await fetch('/account/item/get');
+    if (!res.ok) return;
 
-        const items = await response.json();
-        const container = document.querySelector('.cart-items');
-        container.innerHTML = ''; // Очистка старых данных
+    const items = await res.json();
+    const container = document.querySelector('.cart-items');
+    container.innerHTML = '';
 
-        items.forEach(item => {
-            const card = document.createElement('div');
-            card.classList.add('item-card');
+    items.forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add('item-card');
 
-            card.innerHTML = `
-                <img src="${item.ico}" alt="${item.name}" />
-                <div class="item-details">
-                    <span class="item-name">${item.name}</span>
-                    <span class="item-type">${item.type}</span>
-                    <span class="item-price">${item.price}₽</span>
-                    <span class="item-qty">Quantity: ${item.quantity}</span>
-                </div>
-            `;
+        card.innerHTML = `
+            <img src="${item.ico}" alt="${item.name}" />
+            <div class="item-details">
+                <span class="item-name">${item.name}</span>
+                <span class="item-type">${item.type}</span>
+                <span class="item-price">${item.price}₽</span>
+                <span class="item-qty">Quantity: ${item.quantity}</span>
+                <button class="remove-btn" data-id="${item.id}">Delete</button>
+            </div>
+        `;
 
-            container.appendChild(card);
+        container.appendChild(card);
+    });
+}
+
+function setupRemoveButtons() {
+    const buttons = document.querySelectorAll('.remove-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const itemId = btn.getAttribute('data-id');
+
+            try {
+                const res = await fetch('/account/item/Remove', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: itemId })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    alert(err.message || 'Ошибка удаления');
+                    return;
+                }
+
+                await loadCartItems();
+                setupRemoveButtons(); // Повторная привязка
+            } catch (err) {
+                console.error('Ошибка при удалении:', err);
+            }
         });
-    } catch (err) {
-        console.error('Error loading cart items:', err);
-    }
+    });
 }
 
-// Открытие модального окна
+function logout() {
+    document.cookie = "UserId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    window.location.href = "/login";
+}
+
 function openEditModal() {
-    if (!currentUser) return;
-
-    document.getElementById('edit-login').value = currentUser.login;
-    document.getElementById('edit-email').value = currentUser.email || '';
-    document.getElementById('edit-password').value = currentUser.password;
-
-    document.getElementById('edit-modal').classList.remove('hidden');
+    document.querySelector('.modal').style.display = 'flex';
 }
 
-// Закрытие модального окна
 function closeEditModal() {
-    document.getElementById('edit-modal').classList.add('hidden');
+    document.querySelector('.modal').style.display = 'none';
 }
 
-// Отправка обновлённых данных пользователя
-async function updateUser(event) {
-    event.preventDefault();
+async function updateUser(e) {
+    e.preventDefault();
 
     const login = document.getElementById('edit-login').value;
     const email = document.getElementById('edit-email').value;
     const password = document.getElementById('edit-password').value;
 
-    try {
-        const res = await fetch('/account/user/update', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ login, email, password })
-        });
+    const res = await fetch('/account/user/update', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ login, email, password })
+    });
 
-        const result = await res.json();
+    const data = await res.json();
 
-        if (res.ok) {
-            alert('User updated successfully');
-            closeEditModal();
-            loadUserData();
-        } else {
-            alert(result.message || 'Update failed');
-        }
-    } catch (err) {
-        console.error('Error updating user:', err);
+    if (res.ok) {
+        alert(data.message);
+        closeEditModal();
+        loadUserData();
+    } else {
+        alert(data.message || 'Ошибка при обновлении');
     }
 }
 
-// Выход
-function logout() {
-    document.cookie = "UserId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = '/login';
-}
-
-// Инициализация после загрузки DOM
 window.addEventListener('DOMContentLoaded', () => {
     loadUserData();
-    loadCartItems();
+    loadCartItems().then(() => {
+        setupRemoveButtons();
+    });
 
     document.querySelector('.logout-btn').addEventListener('click', logout);
     document.querySelector('.edit-btn').addEventListener('click', openEditModal);

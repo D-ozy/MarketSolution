@@ -18,7 +18,7 @@ namespace market.Middlewares
             HttpResponse response = context.Response;
             HttpRequest request = context.Request;
 
-            if(request.Path == "/account/user/get" && request.Method == "GET")
+            if (request.Path == "/account/user/get" && request.Method == "GET")
             {
                 await GetUser(response, request);
             }
@@ -29,6 +29,10 @@ namespace market.Middlewares
             else if (request.Path == "/account/item/get" && request.Method == "GET")
             {
                 await GetCartItems(response, request);
+            }
+            else if (request.Path == "/account/item/Remove" && request.Method == "DELETE")
+            {
+                await RemoveItem(response, request);
             }
             else
             {
@@ -126,6 +130,53 @@ namespace market.Middlewares
                              };
 
                 await response.WriteAsJsonAsync(result);
+            }
+        }
+
+        private async Task RemoveItem(HttpResponse response,HttpRequest request)
+        {
+            Item? itemData = await request.ReadFromJsonAsync<Item>();
+            string userId = request.Cookies["UserId"];
+
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                Item? item = db.items.FirstOrDefault(i => i.id == itemData.id);
+
+                if (item == null)
+                {
+                    response.StatusCode = 404;
+                    await response.WriteAsJsonAsync(new { message = "NOT FOUND" });
+                    return;
+                }
+
+                Cart? cart = db.carts.FirstOrDefault(c => c.user_id == userId);
+
+                if (cart == null)
+                {
+                    response.StatusCode = 404;
+                    await response.WriteAsJsonAsync(new { message = "NOT FOUND" });
+                    return;
+                }
+
+                CartsItem cartsItem = db.carts_item.FirstOrDefault(c => c.cart_id == cart.id && c.item_id == item.id);
+
+                if (cartsItem == null)
+                {
+                    response.StatusCode = 404;
+                    await response.WriteAsJsonAsync(new { message = "NOT FOUND" });
+                    return;
+                }
+
+                if (cartsItem.quantity > 1)
+                {
+                    cartsItem.quantity--;
+                }
+                else
+                {
+                    db.carts_item.Remove(cartsItem);
+                }
+
+                db.SaveChanges();
             }
         }
     }
