@@ -70,9 +70,17 @@ function setupRemoveButtons() {
 }
 
 function logout() {
-    document.cookie = "UserId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "/Front/LogIn/logIn.html";
+
+    localStorage.removeItem("userId"); 
+
+    document.cookie = "UserId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict; Secure";
+
+    setTimeout(() => {
+        window.location.href = "/Front/LogIn/logIn.html";
+    }, 100);
 }
+
+
 
 function openEditModal() {
     document.querySelector('.modal').style.display = 'flex';
@@ -85,9 +93,14 @@ function closeEditModal() {
 async function updateUser(e) {
     e.preventDefault();
 
-    const login = document.getElementById('edit-login').value;
-    const email = document.getElementById('edit-email').value;
+    const login = document.getElementById('edit-login').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
     const password = document.getElementById('edit-password').value;
+
+    if (!password) {
+        alert("Поле пароля не должно быть пустым");
+        return; // Не отправляем запрос, если пароль пустой
+    }
 
     const res = await fetch('/account/user/update', {
         method: 'PUT',
@@ -107,6 +120,7 @@ async function updateUser(e) {
         alert(data.message || 'Ошибка при обновлении');
     }
 }
+
 
 window.addEventListener('DOMContentLoaded', () => {
     loadUserData();

@@ -6,28 +6,41 @@
     const urlParams = new URLSearchParams(window.location.search);
     const itemId = urlParams.get("id");
 
-    // Показываем имя пользователя в header
+    // 🔽 Обработка перехода при клике на ник
+    if (profileLink) {
+        profileLink.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            if (userId) {
+                window.location.assign("/Front/Account/account.html");
+            } else {
+                window.location.assign("/Front/Login/login.html");
+            }
+        });
+
+    }
+
+    // 🔽 Показываем имя пользователя в header
     if (userId && profileLink) {
         fetch("https://localhost:7067/product/user/get", {
             method: "GET",
-            credentials: "include" // Обязательно, чтобы cookie отправлялись
+            credentials: "include" // Важно: отправляет куки
         })
             .then(res => res.json())
             .then(user => {
                 if (user && user.login) {
                     profileLink.textContent = user.login;
-                    profileLink.href = "#"; // Или ссылка на профиль
                 }
             })
-            .catch(err => console.error("Ошибка получения пользователя:", err));
+            .catch(err => console.error("User Receipt Error:", err));
     }
 
-    // Загружаем товар
+    // 🔽 Загружаем товар
     if (itemId) {
         loadProduct(itemId);
     }
 
-    // Обработка кнопки "Buy Now"
+    // 🔽 Обработка кнопки "Buy Now"
     if (buyNowBtn && itemId) {
         buyNowBtn.addEventListener("click", async () => {
             try {
@@ -37,19 +50,19 @@
                 });
 
                 if (res.ok) {
-                    showNotification("Товар добавлен в корзину");
+                    showNotification("Item added to cart");
                 } else {
-                    showNotification("Ошибка при добавлении");
+                    showNotification("Error when adding");
                 }
             } catch (err) {
-                console.error("Ошибка при добавлении товара:", err);
-                showNotification("Ошибка соединения");
+                console.error("Error when adding:", err);
+                showNotification("Connection error");
             }
         });
     }
 });
 
-// Показ уведомления
+// 🔽 Показ уведомления
 function showNotification(message) {
     let notif = document.getElementById("notification");
     if (!notif) {
@@ -67,7 +80,7 @@ function showNotification(message) {
     }, 1200);
 }
 
-// Загрузка информации о товаре
+// 🔽 Загрузка информации о товаре
 function loadProduct(id) {
     fetch(`https://localhost:7067/product/item/get?id=${id}`)
         .then(res => res.json())
@@ -96,5 +109,5 @@ function loadProduct(id) {
                 specsDiv.appendChild(ul);
             }
         })
-        .catch(err => console.error("Ошибка загрузки товара:", err));
+        .catch(err => console.error("Error when adding:", err));
 }

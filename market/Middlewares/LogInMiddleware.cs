@@ -51,7 +51,7 @@ namespace market.Middlewares
 
                     response.Cookies.Append("UserId", foundUser.id.ToString(), new CookieOptions
                     {
-                        HttpOnly = true,
+                        HttpOnly = false,
                         Secure = true, // отключи на локалке, если не используешь HTTPS
                         SameSite = SameSiteMode.Strict,
                         Expires = DateTimeOffset.UtcNow.AddDays(7)
