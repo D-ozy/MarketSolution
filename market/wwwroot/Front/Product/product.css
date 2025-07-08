@@ -157,3 +157,12 @@ header {
         opacity: 1;
         bottom: 50px;
     }
+
+
+
+#product-price {
+    font-size: 22px;
+    color: #4ea8ff;
+    margin-bottom: 15px;
+    font-weight: bold;
+}

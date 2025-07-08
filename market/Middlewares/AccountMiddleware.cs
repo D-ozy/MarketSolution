@@ -98,7 +98,7 @@ namespace market.Middlewares
                 if (cart == null)
                 {
                     response.StatusCode = 404;
-                    await response.WriteAsJsonAsync(new { message = "Корзина не найдена" });
+                    await response.WriteAsJsonAsync(new { message = "Cart not found" });
                     return;
                 }
 
@@ -129,7 +129,11 @@ namespace market.Middlewares
                                  quantity = ci.quantity
                              };
 
-                await response.WriteAsJsonAsync(result);
+                var resultList = result.ToList();
+
+                decimal total = resultList.Sum(x => x.quantity * x.price);
+
+                await response.WriteAsJsonAsync(new { items = resultList, total });
             }
         }
 

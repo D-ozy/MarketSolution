@@ -140,3 +140,11 @@ main {
     justify-content: center;
     margin-top: 20px; /* можно тоже увеличить при необходимости */
 }
+
+
+.product-price {
+    font-size: 18px;
+    color: #4ea8ff;
+    margin-bottom: 10px;
+    font-weight: bold;
+}

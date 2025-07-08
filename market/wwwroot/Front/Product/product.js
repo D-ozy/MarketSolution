@@ -86,7 +86,15 @@ function loadProduct(id) {
         .then(res => res.json())
         .then(data => {
             document.getElementById("product-name").textContent = data.name;
+
+            // 👇 Создаём и вставляем блок с ценой
+            let priceElem = document.createElement("div");
+            priceElem.id = "product-price";
+            priceElem.textContent = data.price ? `${data.price} $` : "The price is not specified";
+            document.getElementById("product-info").insertBefore(priceElem, document.getElementById("product-type"));
+
             document.getElementById("product-type").textContent = data.type;
+
 
             const img = document.getElementById("product-image");
             if (data.ico) {

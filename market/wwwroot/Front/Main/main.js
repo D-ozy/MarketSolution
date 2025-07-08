@@ -64,13 +64,15 @@
                 : `<div class="product-icon">📦</div>`;
 
             card.innerHTML = `
-                ${iconHTML}
-                <div class="product-name">${item.name}</div>
-                <div class="product-buttons">
-                    <button class="buy-btn">Buy Now</button>
-                    <button class="details-btn">More Details</button>
-                </div>
-            `;
+    ${iconHTML}
+    <div class="product-name">${item.name}</div>
+    <div class="product-price">${item.price ? item.price + "$" : "The price is not specified"}</div>
+    <div class="product-buttons">
+        <button class="buy-btn">Buy Now</button>
+        <button class="details-btn">More Details</button>
+    </div>
+`;
+
 
             productGrid.appendChild(card);
         });

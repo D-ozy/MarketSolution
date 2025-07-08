@@ -16,11 +16,11 @@ async function loadCartItems() {
     const res = await fetch('/account/item/get');
     if (!res.ok) return;
 
-    const items = await res.json();
+    const data = await res.json(); // ← Здесь получаем объект с items и total
     const container = document.querySelector('.cart-items');
     container.innerHTML = '';
 
-    items.forEach(item => {
+    data.items.forEach(item => {
         const card = document.createElement('div');
         card.classList.add('item-card');
 
@@ -29,7 +29,7 @@ async function loadCartItems() {
             <div class="item-details">
                 <span class="item-name">${item.name}</span>
                 <span class="item-type">${item.type}</span>
-                <span class="item-price">${item.price}₽</span>
+                <span class="item-price">${item.price}$</span>
                 <span class="item-qty">Quantity: ${item.quantity}</span>
                 <button class="remove-btn" data-id="${item.id}">Delete</button>
             </div>
@@ -37,7 +37,11 @@ async function loadCartItems() {
 
         container.appendChild(card);
     });
+
+    // 💰 Обновляем сумму
+    document.getElementById('cart-total').textContent = `${data.total} $`;
 }
+
 
 function setupRemoveButtons() {
     const buttons = document.querySelectorAll('.remove-btn');
@@ -132,4 +136,9 @@ window.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.edit-btn').addEventListener('click', openEditModal);
     document.querySelector('.cancel-btn').addEventListener('click', closeEditModal);
     document.getElementById('edit-form').addEventListener('submit', updateUser);
+
+
+    document.querySelector('.home-btn').addEventListener('click', () => {
+        window.location.href = '/Front/Main/main.html';
+    });
 });
