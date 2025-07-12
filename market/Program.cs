@@ -12,6 +12,7 @@ namespace market
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
             var app = builder.Build();
 
             app.UseStaticFiles();
@@ -21,6 +22,7 @@ namespace market
             app.UseMiddleware<MainMiddleware>();
             app.UseMiddleware<ProductMiddleware>();
             app.UseMiddleware<AccountMiddleware>();
+            app.UseMiddleware<AdminAccountMiddleware>();
 
             app.Run(async (context) =>
             {
@@ -31,15 +33,18 @@ namespace market
                 string mainPath = "/Front/Main/main.html";
                 string productPath = "/Front/Product/product.html";
                 string accountPath = "/Front/Account/account.html";
+                string adminPagePath = "/Front/AdminPage/adminPage.html";
                 PathString path = context.Request.Path;
 
+                string[] pages = new string[6] { regPath, logPath, mainPath, productPath, accountPath, adminPagePath };
 
-                if (path != regPath || path != logPath || path != mainPath || path != productPath || path != accountPath)
+
+                if (!pages.Any(x => x == path))
                 {
                     context.Response.Redirect(mainPath);
                     return;
                 }
-                    
+
 
                 await context.Response.WriteAsync("Ты что тут потерял?");
             });

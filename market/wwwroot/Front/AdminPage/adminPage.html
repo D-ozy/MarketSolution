@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="adminPage.css" />
+</head>
+<body>
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <h3>Редактировать пользователя</h3>
+            <input type="hidden" id="edit-user-id" />
+            <label>Login: <input type="text" id="edit-login" /></label>
+            <label>Email: <input type="email" id="edit-email" /></label>
+            <label>Password: <input type="text" id="edit-password" /></label>
+            <label>
+                Role:
+                <select id="edit-role">
+                    <option value="user">user</option>
+                    <option value="admin">admin</option>
+                </select>
+            </label>
+            <div class="modal-actions">
+                <button id="save-user-btn" class="action-btn">Save</button>
+                <button id="cancel-edit-btn" class="remove-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <header>
+            <h1>TechStore Admin</h1>
+            <div class="user-panel">
+                <span class="user-info">Admin: <span id="admin-name">...</span></span>
+                <button class="home-btn">Home</button>
+                <button class="logout-btn" id="logout-btn">Logout</button>
+
+
+            </div>
+        </header>
+
+        <main>
+            <section class="admin-section">
+                <h2>Manage Users</h2>
+                <div class="admin-table" id="user-table">
+                    <!-- Таблица пользователей будет динамически загружена -->
+                </div>
+            </section>
+
+            <section class="admin-section">
+                <h2>Manage Products</h2>
+                <div class="admin-controls">
+                    <button class="action-btn">Add Product</button>
+                </div>
+                <div class="admin-table" id="product-table">
+                    <!-- Таблица товаров -->
+                </div>
+            </section>
+
+            <section class="admin-section">
+                <h2>Manage Orders</h2>
+                <div class="admin-table" id="order-table">
+                    <!-- Таблица заказов -->
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="adminPage.js"></script>
+</body>
+</html>

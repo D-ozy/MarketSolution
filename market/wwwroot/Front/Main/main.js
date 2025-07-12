@@ -12,14 +12,35 @@
     }
 
     // 🔽 Обработка перехода при клике на иконку профиля
-    accountLink.addEventListener("click", (event) => {
+    accountLink.addEventListener("click", async (event) => {
         event.preventDefault();
-        if (userId) {
-            window.location.href = "/Front/Account/account.html";
-        } else {
+
+        if (!userId) {
+            window.location.href = "/Front/Login/login.html";
+            return;
+        }
+
+        try {
+            const response = await fetch("/main/user/get", { method: "GET" });
+
+            if (!response.ok) {
+                throw new Error("Ошибка получения пользователя");
+            }
+
+            const user = await response.json();
+
+            if (user.role === "admin") {
+                window.location.href = "/Front/AdminPage/adminPage.html";
+            } else {
+                window.location.href = "/Front/Account/account.html";
+            }
+
+        } catch (err) {
+            console.error("Ошибка при получении роли пользователя:", err);
             window.location.href = "/Front/Login/login.html";
         }
     });
+
 
     // 🔽 Попытка загрузить логин пользователя и вставить его в ссылку
     if (userId) {
