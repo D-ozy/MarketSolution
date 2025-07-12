@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace market.Middlewares
 {
-    public class MainMiddleware
+    public class MainMiddleware : CommandMiddlewares
     {
         private readonly RequestDelegate next;
 
@@ -23,7 +23,7 @@ namespace market.Middlewares
 
             if (path == "/main/user/get" && request.Method == "GET")
             {
-                await GetUser(response, request);
+                await base.GetUser(response, request);
             }
             else if(path == "/main/item/get" && request.Method == "GET")
             {
@@ -37,30 +37,6 @@ namespace market.Middlewares
             else
             {
                 await next.Invoke(context);
-            }
-        }
-
-        private async Task GetUser(HttpResponse response, HttpRequest request)
-        {
-            string? userIdStr = request.Cookies["UserId"];
-
-
-            using (MarketDbContext db = new MarketDbContext())
-            {
-                User? user = db.users.FirstOrDefault(us => us.id == userIdStr);
-
-                if (user != null)
-                {
-                    await response.WriteAsJsonAsync(user);
-                }
-            }
-        }
-
-        private async Task GetAllItems(HttpResponse response)
-        {
-            using(MarketDbContext db = new MarketDbContext())
-            { 
-                await response.WriteAsJsonAsync(db.items);
             }
         }
 

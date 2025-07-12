@@ -3,7 +3,7 @@ using MyMarketLibrary.Models;
 
 namespace market.Middlewares
 {
-    public class ProductMiddleware
+    public class ProductMiddleware : CommandMiddlewares
     {
         private readonly RequestDelegate next;
 
@@ -20,7 +20,7 @@ namespace market.Middlewares
 
             if (path == "/product/user/get" && request.Method == "GET")
             {
-                await GetUser(response, request);
+                await base.GetUser(response, request);
             }
             else if (path == "/product/item/get" && request.Method == "GET")
             {
@@ -47,24 +47,6 @@ namespace market.Middlewares
                 if(item != null)
                 {
                     await response.WriteAsJsonAsync(item);
-                }
-            }
-        }
-
-        private async Task GetUser(HttpResponse response, HttpRequest request)
-        {
-            string? userIdStr = request.Cookies["UserId"];
-
-
-            Console.WriteLine(userIdStr);
-
-            using (MarketDbContext db = new MarketDbContext())
-            {
-                User? user = db.users.FirstOrDefault(us => us.id == userIdStr);
-
-                if (user != null)
-                {
-                    await response.WriteAsJsonAsync(user);
                 }
             }
         }

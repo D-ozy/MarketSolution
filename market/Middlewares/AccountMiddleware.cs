@@ -4,7 +4,7 @@ using MyMarketLibrary.Models;
 
 namespace market.Middlewares
 {
-    public class AccountMiddleware
+    public class AccountMiddleware : CommandMiddlewares
     {
         private readonly RequestDelegate next;
 
@@ -20,7 +20,7 @@ namespace market.Middlewares
 
             if (request.Path == "/account/user/get" && request.Method == "GET")
             {
-                await GetUser(response, request);
+                await base.GetUser(response, request);
             }
             else if (request.Path == "/account/user/update" && request.Method == "PUT")
             {
@@ -65,24 +65,6 @@ namespace market.Middlewares
                         response.StatusCode = 404;
                         await response.WriteAsJsonAsync(new { message = "USER NOT FOUND" });
                     }
-                }
-            }
-        }
-
-        private async Task GetUser(HttpResponse response, HttpRequest request)
-        {
-            string? userIdStr = request.Cookies["UserId"];
-
-
-            Console.WriteLine(userIdStr);
-
-            using (MarketDbContext db = new MarketDbContext())
-            {
-                User? user = db.users.FirstOrDefault(us => us.id == userIdStr);
-
-                if (user != null)
-                {
-                    await response.WriteAsJsonAsync(user);
                 }
             }
         }

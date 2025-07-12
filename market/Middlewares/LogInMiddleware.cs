@@ -3,7 +3,7 @@ using MyMarketLibrary.Models;
 
 namespace market.Middlewares
 {
-    public class LogInMiddleware
+    public class LogInMiddleware : Hash
     {
         private readonly RequestDelegate next;
 
@@ -43,7 +43,7 @@ namespace market.Middlewares
 
                 var foundUser = db.users.FirstOrDefault(us =>
                     (us.login == user.login || us.email == user.email) &&
-                    us.password == user.password);
+                    us.password == AddHash(user.password));
 
                 if (foundUser != null)
                 {

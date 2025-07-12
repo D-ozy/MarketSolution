@@ -1,10 +1,12 @@
 ﻿using market.DbContextFolder;
 using MyMarketLibrary.Models;
 using MyMarketLibrary.Models.Enumerables;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace market.Middlewares
 {
-    public class RegistrationMiddleware
+    public class RegistrationMiddleware : Hash
     {
         private readonly RequestDelegate next;
 
@@ -59,6 +61,7 @@ namespace market.Middlewares
                     {
                         user.id = Guid.NewGuid().ToString();
                         user.role = Role.User.ToString();
+                        user.password = AddHash(user.password);
 
                         db.users.Add(user);
                         db.SaveChanges();
@@ -78,6 +81,17 @@ namespace market.Middlewares
             {
                 response.StatusCode = 400;
                 await response.WriteAsJsonAsync(new { message = "Invalid user data" });
+            }
+        }
+
+        private string Hash(string pass)
+        {
+            byte[] temp = Encoding.UTF8.GetBytes(pass);
+
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                var hash = sha256.ComputeHash(temp);
+                return Convert.ToBase64String(hash);
             }
         }
 

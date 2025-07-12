@@ -3,7 +3,7 @@ using MyMarketLibrary.Models;
 
 namespace market.Middlewares
 {
-    public class AdminAccountMiddleware
+    public class AdminAccountMiddleware : CommandMiddlewares
     {
         private readonly RequestDelegate next;
 
@@ -25,7 +25,7 @@ namespace market.Middlewares
             }
             else if(path == "/admin/item/get" && request.Method == "GET")
             {
-                await GetItems(response, request);
+                await base.GetAllItems(response);
             }
             else if(path == "/admin/user/update" && request.Method == "PUT")
             {
@@ -53,14 +53,6 @@ namespace market.Middlewares
                 {
                     await response.WriteAsJsonAsync(new { admin, db.users });
                 }
-            }
-        }
-
-        private async Task GetItems(HttpResponse response, HttpRequest request)
-        {
-            using(MarketDbContext db = new MarketDbContext())
-            {
-                await response.WriteAsJsonAsync(db.items);
             }
         }
 
