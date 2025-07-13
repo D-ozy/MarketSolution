@@ -140,7 +140,7 @@ function renderItems(items) {
 
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
-    ["ID", "Name", "Type", "Price", "Quantity", "Brand"].forEach(col => {
+    ["ID", "Name", "Type", "Price", "Quantity", "Brand", "Actions"].forEach(col => {
         const th = document.createElement("th");
         th.textContent = col;
         headerRow.appendChild(th);
@@ -154,9 +154,49 @@ function renderItems(items) {
 
         ["id", "name", "type", "price", "quantity", "brand"].forEach(field => {
             const td = document.createElement("td");
-            td.textContent = item[field] ?? "";
+            if (field === "price") {
+                td.textContent = (item[field] !== undefined && item[field] !== null) ? item[field] + "$" : "";
+            } else {
+                td.textContent = item[field] ?? "";
+            }
             row.appendChild(td);
         });
+
+        // Колонка с кнопками удаления и обновления
+        const actionsTd = document.createElement("td");
+
+        // Кнопка удаления
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.className = "remove-btn";
+        removeBtn.onclick = () => {
+            if (confirm(`Are you sure you want to remove the product "${item.name}"?`)) {
+                fetch(`/admin/item/remove?itemId=${item.id}`, {
+                    method: "DELETE",
+                    credentials: "include"
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to remove item");
+                        return res.json();
+                    })
+                    .then(() => {
+                        fetchItems();
+                    })
+                    .catch(err => {
+                        alert("Error removing item: " + err.message);
+                    });
+            }
+        };
+        actionsTd.appendChild(removeBtn);
+
+        // Кнопка обновления
+        const updateBtn = document.createElement("button");
+        updateBtn.textContent = "Update";
+        updateBtn.className = "edit-btn";
+        updateBtn.onclick = () => openUpdateModal(item);
+        actionsTd.appendChild(updateBtn);
+
+        row.appendChild(actionsTd);
 
         tbody.appendChild(row);
     });
@@ -165,6 +205,9 @@ function renderItems(items) {
     container.innerHTML = "";
     container.appendChild(table);
 }
+
+
+
 
 function fetchRequests() {
     fetch("/admin/request/get", {
@@ -322,5 +365,112 @@ document.getElementById("confirm-delete-btn").addEventListener("click", () => {
         })
         .catch(err => {
             alert("Error deleting user: " + err.message);
+        });
+});
+
+
+
+
+document.querySelector(".admin-controls .action-btn").addEventListener("click", () => {
+    document.getElementById("add-product-modal").style.display = "flex";
+});
+
+document.getElementById("cancel-product-btn").addEventListener("click", () => {
+    document.getElementById("add-product-modal").style.display = "none";
+});
+
+
+
+document.getElementById("submit-product-btn").addEventListener("click", () => {
+    const name = document.getElementById("product-name").value.trim();
+    const type = document.getElementById("product-type").value.trim();
+    const price = parseFloat(document.getElementById("product-price").value);
+    const quantity = parseInt(document.getElementById("product-quantity").value);
+    const brand = document.getElementById("product-brand").value.trim();
+    const ico = document.getElementById("product-ico").value.trim(); // <-- новое поле
+    const specifications = document.getElementById("product-specification").value.trim();
+
+    if (!name || !type || isNaN(price) || isNaN(quantity) || !brand || !ico ||  !specifications) {
+        alert("Please fill all fields correctly, including icon URL.");
+        return;
+    }
+
+    const newItem = { name, type, price, quantity, brand, ico, specifications }; // <-- добавляем ico
+
+    fetch("/admin/item/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(newItem)
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to add item");
+            return res.json();
+        })
+        .then(() => {
+            document.getElementById("add-product-modal").style.display = "none";
+            fetchItems(); // reload item list
+        })
+        .catch(err => {
+            alert("Error adding item: " + err.message);
+        });
+});
+
+
+
+function openUpdateModal(item) {
+    document.getElementById("update-product-id").value = item.id;
+    document.getElementById("update-product-name").value = item.name || "";
+    document.getElementById("update-product-type").value = item.type || "";
+    document.getElementById("update-product-price").value = item.price || 0;
+    document.getElementById("update-product-quantity").value = item.quantity || 0;
+    document.getElementById("update-product-brand").value = item.brand || "";
+    document.getElementById("update-product-ico").value = item.ico || "";
+    document.getElementById("update-product-specifications").value = item.specifications || "";
+
+    document.getElementById("update-product-modal").style.display = "flex";
+}
+
+document.getElementById("cancel-update-product-btn").addEventListener("click", () => {
+    document.getElementById("update-product-modal").style.display = "none";
+});
+
+document.getElementById("save-update-product-btn").addEventListener("click", () => {
+    const id = document.getElementById("update-product-id").value;
+    const name = document.getElementById("update-product-name").value.trim();
+    const type = document.getElementById("update-product-type").value.trim();
+    const price = parseFloat(document.getElementById("update-product-price").value);
+    const quantity = parseInt(document.getElementById("update-product-quantity").value);
+    const brand = document.getElementById("update-product-brand").value.trim();
+    const ico = document.getElementById("update-product-ico").value.trim();
+    const specifications = document.getElementById("update-product-specifications").value.trim();
+
+    if (!name || !type || isNaN(price) || isNaN(quantity) || !brand || !ico || !specifications) {
+        alert("Please fill all fields correctly.");
+        return;
+    }
+
+    const updatedItem = { name, type, price, quantity, brand, ico, specifications };
+
+    fetch(`/admin/item/update?itemId=${id}`, {
+        method: "PUT",  // Рекомендуется использовать PUT вместо UPDATE
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(updatedItem)
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to update item");
+            return res.json();
+        })
+        .then(() => {
+            document.getElementById("update-product-modal").style.display = "none";
+            fetchItems();  // Обновляем список товаров
+        })
+        .catch(err => {
+            alert("Error updating item: " + err.message);
         });
 });

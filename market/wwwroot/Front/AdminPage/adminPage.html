@@ -80,6 +80,45 @@
         </div>
     </div>
 
+    <div id="add-product-modal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Product</h3>
+            <label>Name: <input type="text" id="product-name" /></label>
+            <label>Type: <input type="text" id="product-type" /></label>
+            <label>Price: <input type="number" id="product-price" /></label>
+            <label>Quantity: <input type="number" id="product-quantity" /></label>
+            <label>Brand: <input type="text" id="product-brand" /></label>
+            <label>Ico link: <input type="text" id="product-ico" /></label>
+            <label>Specification: <input type="text" id="product-specification" /></label>
+
+
+            <div class="modal-actions">
+                <button id="submit-product-btn" class="action-btn">Add</button>
+                <button id="cancel-product-btn" class="remove-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="update-product-modal" class="modal" style="display:none; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);">
+    <div class="modal-content2" style="padding:20px; border-radius:5px; max-width:400px; width:100%;">
+        <h3>Update Product</h3>
+        <input type="hidden" id="update-product-id" />
+        <label>Name: <input type="text" id="update-product-name" /></label><br/>
+        <label>Type: <input type="text" id="update-product-type" /></label><br/>
+        <label>Price: <input type="number" id="update-product-price" step="0.01" /></label><br/>
+        <label>Quantity: <input type="number" id="update-product-quantity" /></label><br/>
+        <label>Brand: <input type="text" id="update-product-brand" /></label><br/>
+        <label>Ico link: <input type="text" id="update-product-ico" /></label><br/>
+        <label>Specification: <input type="text" id="update-product-specifications" /></label><br/>
+
+        <div style="margin-top:10px;">
+            <button id="save-update-product-btn" class="action-btn">Save</button>
+            <button id="cancel-update-product-btn" class="remove-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
 
     <script src="adminPage.js"></script>
 </body>

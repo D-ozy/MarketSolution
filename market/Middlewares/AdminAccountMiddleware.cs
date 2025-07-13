@@ -27,17 +27,29 @@ namespace market.Middlewares
             {
                 await base.GetAllItems(response);
             }
-            else if(path == "/admin/user/update" && request.Method == "PUT")
+            else if(path == "/admin/item/add" && request.Method == "POST")
+            {
+                await AddItem(response, request);
+            }
+            else if (path == "/admin/user/update" && request.Method == "PUT")
             {
                 await UpdateUser(response, request);
             }
-            else if(path == "/admin/user/remove" && request.Method == "DELETE")
+            else if (path == "/admin/user/remove" && request.Method == "DELETE")
             {
                 await RemoveUser(response, request);
             }
-            else if(path == "/admin/request/get" && request.Method == "GET")
+            else if(path == "/admin/item/update" && request.Method == "PUT")
+            {
+                await UpdateItem(response, request);
+            }
+            else if (path == "/admin/request/get" && request.Method == "GET")
             {
                 await GetRequest(response);
+            }
+            else if (path == "/admin/item/remove" && request.Method == "DELETE")
+            {
+                await RemoveItem(response, request);
             }
             else
             {
@@ -131,6 +143,78 @@ namespace market.Middlewares
 
                     db.SaveChanges();
                     await response.WriteAsJsonAsync(user);
+            }
+        }
+
+        private async Task AddItem(HttpResponse response, HttpRequest request)
+        {
+            Item? item = await request.ReadFromJsonAsync<Item>();
+
+            if (item != null)
+            {
+                using(MarketDbContext db = new MarketDbContext())
+                {
+                    item.id = Guid.NewGuid().ToString();
+                    db.items.Add(item);
+
+                    db.SaveChanges();
+
+                    await response.WriteAsJsonAsync(item);
+                }
+            }
+            else
+            {
+                response.StatusCode = 400;
+                await response.WriteAsJsonAsync(new { message = "Incorrected data" });
+            }
+        }
+
+        private async Task UpdateItem(HttpResponse response, HttpRequest request)
+        {
+            string itemId = request.Query["itemId"];
+
+            Item? itemData = await request.ReadFromJsonAsync<Item>();
+
+            if (itemData != null)
+            {
+                using (MarketDbContext db = new MarketDbContext())
+                {
+                    Item? item = db.items.FirstOrDefault(x => x.id == itemId);
+
+                    if (item != null)
+                    {
+                        item.name = itemData.name;
+                        item.type = itemData.type;
+                        item.price = itemData.price;
+                        item.quantity = itemData.quantity;
+                        item.brand = itemData.brand;
+                        item.ico = itemData.ico;    
+                        item.specifications = itemData.specifications;
+
+                        db.SaveChanges();
+
+                        await response.WriteAsJsonAsync(item);
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveItem(HttpResponse response, HttpRequest request)
+        {
+            string itemId = request.Query["itemId"];
+
+            using(MarketDbContext db = new MarketDbContext())
+            {
+                Item item = db.items.FirstOrDefault(i => i.id == itemId);
+
+                if(item != null)
+                {
+                    db.Remove(item);
+
+                    db.SaveChanges();
+
+                    await response.WriteAsJsonAsync(item);
+                }
             }
         }
 
