@@ -1,8 +1,17 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
-    // Привязка logout к кнопке "Выйти"
+    // Привязка logout к кнопке "logout"
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
         logoutBtn.addEventListener("click", logout);
+    }
+
+    const homeBtn = document.getElementById("home-btn");
+    if (homeBtn) {
+        homeBtn.addEventListener("click", () => {
+            setTimeout(() => {
+                window.location.href = "/Front/Main/main.html";
+            }, 100);
+        });
     }
 
     fetch("/admin/user/get", {
@@ -11,7 +20,7 @@
     })
         .then(res => {
             if (!res.ok) {
-                throw new Error("Сервер вернул ошибку");
+                throw new Error("The server returned an error");
             }
             return res.json();
         })
@@ -32,10 +41,13 @@
 
             // Загружаем товары
             fetchItems();
+
+            // Загружаем заявки
+            fetchRequests();
         })
         .catch(error => {
-            console.error("Ошибка при получении данных:", error);
-            alert("Ошибка при получении данных администратора.");
+            console.error("Error when receiving data:", error);
+            alert("Error when receiving the administrator's data.");
         });
 });
 
@@ -43,7 +55,7 @@ function renderUsers(users) {
     const container = document.getElementById("user-table");
 
     if (!Array.isArray(users) || users.length === 0) {
-        container.innerHTML = "<p>Пользователи не найдены.</p>";
+        container.innerHTML = "<p>Users not found</p>";
         return;
     }
 
@@ -70,11 +82,21 @@ function renderUsers(users) {
         });
 
         const actionsTd = document.createElement("td");
+
+        // Кнопка редактирования
         const editBtn = document.createElement("button");
         editBtn.textContent = "Update";
         editBtn.className = "edit-btn";
         editBtn.onclick = () => openEditModal(user);
         actionsTd.appendChild(editBtn);
+
+        // Кнопка удаления
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "remove-btn";
+        deleteBtn.onclick = () => openDeleteModal(user.id);
+        actionsTd.appendChild(deleteBtn);
+
         row.appendChild(actionsTd);
 
         tbody.appendChild(row);
@@ -85,7 +107,6 @@ function renderUsers(users) {
     container.appendChild(table);
 }
 
-
 function fetchItems() {
     fetch("/admin/item/get", {
         method: "GET",
@@ -93,7 +114,7 @@ function fetchItems() {
     })
         .then(res => {
             if (!res.ok) {
-                throw new Error("Ошибка при получении товаров");
+                throw new Error("error on receipt of goods");
             }
             return res.json();
         })
@@ -101,9 +122,9 @@ function fetchItems() {
             renderItems(items);
         })
         .catch(err => {
-            console.error("Ошибка загрузки товаров:", err);
+            console.error("Error loading the goods.", err);
             const container = document.getElementById("product-table");
-            container.innerHTML = "<p>Ошибка загрузки товаров.</p>";
+            container.innerHTML = "<p>Error loading the goods.</p>";
         });
 }
 
@@ -111,7 +132,7 @@ function renderItems(items) {
     const container = document.getElementById("product-table");
 
     if (!Array.isArray(items) || items.length === 0) {
-        container.innerHTML = "<p>Товары не найдены.</p>";
+        container.innerHTML = "<p>No products were found.</p>";
         return;
     }
 
@@ -141,9 +162,83 @@ function renderItems(items) {
     });
 
     table.appendChild(tbody);
-    container.innerHTML = ""; // Очищаем старое содержимое
+    container.innerHTML = "";
     container.appendChild(table);
 }
+
+function fetchRequests() {
+    fetch("/admin/request/get", {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error("Error fetching requests");
+            }
+            return res.json();
+        })
+        .then(requests => {
+            renderRequests(requests);
+        })
+        .catch(err => {
+            console.error("Error loading requests.", err);
+            const container = document.getElementById("order-table");
+            container.innerHTML = "<p>Error loading requests.</p>";
+        });
+}
+
+function getStatusText(status) {
+    switch (status) {
+        case 0:
+            return 'Open';
+        case 1:
+            return 'Progress';
+        case 2:
+            return 'Closed';
+        default:
+            return 'Unknown';
+    }
+}
+
+function renderRequests(requests) {
+    const requestTable = document.getElementById('request-table');
+    if (!requestTable) {
+        console.error('Element with id "request-table" not found');
+        return;
+    }
+
+    if (requests.length === 0) {
+        requestTable.innerHTML = '<p>No requests found.</p>';
+        return;
+    }
+
+    let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Message</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+    requests.forEach(r => {
+        html += `
+      <tr>
+        <td>${r.userId}</td>
+        <td>${r.message}</td>
+        <td>${getStatusText(r.status)}</td>
+      </tr>
+    `;
+    });
+
+    html += '</tbody></table>';
+
+    requestTable.innerHTML = html;
+}
+
 
 
 function logout() {
@@ -155,7 +250,6 @@ function logout() {
         window.location.href = "/Front/LogIn/logIn.html";
     }, 100);
 }
-
 
 function openEditModal(user) {
     document.getElementById("edit-user-id").value = user.id;
@@ -186,14 +280,47 @@ document.getElementById("save-user-btn").addEventListener("click", () => {
         body: JSON.stringify({ login, email, password, role })
     })
         .then(res => {
-            if (!res.ok) throw new Error("Ошибка при обновлении пользователя");
+            if (!res.ok) throw new Error("Error when updating the user");
             return res.json();
         })
         .then(() => {
             document.getElementById("edit-modal").style.display = "none";
-            location.reload(); // Перезагрузить, чтобы отобразить изменения
+            location.reload();
         })
         .catch(err => {
             alert("Ошибка: " + err.message);
+        });
+});
+
+let userIdToDelete = null;
+
+function openDeleteModal(userId) {
+    userIdToDelete = userId;
+    document.getElementById("confirm-delete-modal").style.display = "flex";
+}
+
+document.getElementById("cancel-delete-btn").addEventListener("click", () => {
+    userIdToDelete = null;
+    document.getElementById("confirm-delete-modal").style.display = "none";
+});
+
+document.getElementById("confirm-delete-btn").addEventListener("click", () => {
+    if (!userIdToDelete) return;
+
+    fetch(`/admin/user/remove?UserId=${userIdToDelete}`, {
+        method: "DELETE",
+        credentials: "include",
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Error when deleting the user");
+            return res.json();
+        })
+        .then(() => {
+            userIdToDelete = null;
+            document.getElementById("confirm-delete-modal").style.display = "none";
+            location.reload();
+        })
+        .catch(err => {
+            alert("Error deleting user: " + err.message);
         });
 });

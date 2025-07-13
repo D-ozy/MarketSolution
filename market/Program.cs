@@ -23,6 +23,7 @@ namespace market
             app.UseMiddleware<ProductMiddleware>();
             app.UseMiddleware<AccountMiddleware>();
             app.UseMiddleware<AdminAccountMiddleware>();
+            app.UseMiddleware<RequestMiddleware>();
 
             app.Run(async (context) =>
             {

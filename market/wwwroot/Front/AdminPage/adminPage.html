@@ -34,7 +34,7 @@
             <h1>TechStore Admin</h1>
             <div class="user-panel">
                 <span class="user-info">Admin: <span id="admin-name">...</span></span>
-                <button class="home-btn">Home</button>
+                <button class="home-btn" id="home-btn">Home</button>
                 <button class="logout-btn" id="logout-btn">Logout</button>
 
 
@@ -60,13 +60,27 @@
             </section>
 
             <section class="admin-section">
-                <h2>Manage Orders</h2>
-                <div class="admin-table" id="order-table">
-                    <!-- Таблица заказов -->
+                <h2>Manage Requests</h2>
+                <div class="admin-table" id="request-table">
+                    <!-- Таблица заявок будет динамически загружена сюда -->
                 </div>
             </section>
+
         </main>
     </div>
+
+    <div id="confirm-delete-modal" class="modal">
+        <div class="modal-content">
+            <h3>Are you sure you want to delete this user?</h3>
+            <p>This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="confirm-delete-btn" class="remove-btn">Delete</button>
+                <button id="cancel-delete-btn" class="action-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
     <script src="adminPage.js"></script>
 </body>
 </html>

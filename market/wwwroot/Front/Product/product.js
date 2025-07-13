@@ -20,7 +20,7 @@
 
     }
 
-    // 🔽 Показываем имя пользователя в header
+    // 🔽 Показываем имя пользователя в header и скрываем кнопку для admin
     if (userId && profileLink) {
         fetch("https://localhost:7210/product/user/get", {
             method: "GET",
@@ -30,6 +30,12 @@
             .then(user => {
                 if (user && user.login) {
                     profileLink.textContent = user.login;
+                }
+                if (user.role === "admin") {
+                    const messageBtn = document.getElementById("message-button");
+                    if (messageBtn) {
+                        messageBtn.style.display = "none";
+                    }
                 }
             })
             .catch(err => console.error("User Receipt Error:", err));
@@ -56,6 +62,71 @@
                 }
             } catch (err) {
                 console.error("Error when adding:", err);
+                showNotification("Connection error");
+            }
+        });
+    }
+
+    // --- Логика для окна сообщений (Ask Admin) ---
+    const messageBtn = document.getElementById("message-button");
+    const messageBox = document.getElementById("message-box");
+    const sendMsgBtn = document.getElementById("send-message");
+    const cancelMsgBtn = document.getElementById("cancel-message");
+    const messageInput = document.getElementById("message-input");
+
+    // Показываем/скрываем окно сообщения при клике на кнопку
+    if (messageBtn && messageBox) {
+        messageBtn.addEventListener("click", () => {
+            if (messageBox.style.display === "block") {
+                messageBox.style.display = "none";
+            } else {
+                messageBox.style.display = "block";
+                messageInput.focus();
+            }
+        });
+    }
+
+    // Отмена сообщения — просто скрываем окно и очищаем поле
+    if (cancelMsgBtn && messageBox && messageInput) {
+        cancelMsgBtn.addEventListener("click", () => {
+            messageInput.value = "";
+            messageBox.style.display = "none";
+        });
+    }
+
+    // Отправка сообщения на бекенд
+    if (sendMsgBtn && messageInput && messageBox) {
+        sendMsgBtn.addEventListener("click", async () => {
+            const messageText = messageInput.value.trim();
+            if (!messageText) {
+                showNotification("Please enter a message");
+                return;
+            }
+
+            try {
+                const response = await fetch("https://localhost:7210/request/message/add", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: messageText })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.message) {
+                        showNotification(data.message);
+                    } else {
+                        showNotification("Message sent");
+                    }
+                    messageInput.value = "";
+                    messageBox.style.display = "none";
+                } else {
+                    showNotification("Failed to send message");
+                }
+            } catch (error) {
+                console.error("Send message error:", error);
                 showNotification("Connection error");
             }
         });
@@ -94,7 +165,6 @@ function loadProduct(id) {
             document.getElementById("product-info").insertBefore(priceElem, document.getElementById("product-type"));
 
             document.getElementById("product-type").textContent = data.type;
-
 
             const img = document.getElementById("product-image");
             if (data.ico) {

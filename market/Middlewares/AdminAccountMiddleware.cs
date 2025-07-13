@@ -31,6 +31,14 @@ namespace market.Middlewares
             {
                 await UpdateUser(response, request);
             }
+            else if(path == "/admin/user/remove" && request.Method == "DELETE")
+            {
+                await RemoveUser(response, request);
+            }
+            else if(path == "/admin/request/get" && request.Method == "GET")
+            {
+                await GetRequest(response);
+            }
             else
             {
                 await next.Invoke(context);
@@ -90,6 +98,48 @@ namespace market.Middlewares
             {
                 response.StatusCode = 404;
                 await response.WriteAsJsonAsync(new { message = "USER NOT FOUND" });
+            }
+        }
+
+        private async Task RemoveUser(HttpResponse response, HttpRequest request)
+        {
+            string userId = request.Query["UserId"];    
+
+            using(MarketDbContext db = new MarketDbContext())
+            {
+                User? user = db.users.FirstOrDefault(u => u.id == userId);
+
+                if(user != null)
+                    db.users.Remove(user);
+                else
+                {
+                    response.StatusCode = 404;
+                    await response.WriteAsJsonAsync(new { message = "USER NOT FOUND" });
+                }
+
+
+                    Cart cart = db.carts.FirstOrDefault(c => c.user_id == userId);
+
+                if(cart != null)
+                    db.carts.Remove(cart);
+                else
+                {
+                    response.StatusCode = 404;
+                    await response.WriteAsJsonAsync(new { message = "CART NOT FOUND" });
+                }
+
+
+                    db.SaveChanges();
+                    await response.WriteAsJsonAsync(user);
+            }
+        }
+
+        private async Task GetRequest(HttpResponse response)
+        {
+            using(MarketDbContext db = new MarketDbContext())
+            {
+                
+                await response.WriteAsJsonAsync(db.requests);
             }
         }
     }

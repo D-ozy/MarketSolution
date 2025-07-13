@@ -2,15 +2,6 @@
     const accountLink = document.querySelector(".profile-icon a");
     const userId = localStorage.getItem("userId");
 
-    function showNotification(message) {
-        const notif = document.getElementById("notification");
-        notif.textContent = message;
-        notif.classList.add("show");
-        setTimeout(() => {
-            notif.classList.remove("show");
-        }, 1000);
-    }
-
     // 🔽 Обработка перехода при клике на иконку профиля
     accountLink.addEventListener("click", async (event) => {
         event.preventDefault();
@@ -24,7 +15,7 @@
             const response = await fetch("/main/user/get", { method: "GET" });
 
             if (!response.ok) {
-                throw new Error("Ошибка получения пользователя");
+                throw new Error("Error when receiving the user:");
             }
 
             const user = await response.json();
@@ -36,11 +27,10 @@
             }
 
         } catch (err) {
-            console.error("Ошибка при получении роли пользователя:", err);
+            console.error("Error when receiving the user:", err);
             window.location.href = "/Front/Login/login.html";
         }
     });
-
 
     // 🔽 Попытка загрузить логин пользователя и вставить его в ссылку
     if (userId) {
@@ -54,9 +44,16 @@
                 if (user && user.login) {
                     accountLink.textContent = user.login;
                 }
+                // Проверка роли для скрытия кнопки
+                if (user.role === "admin") {
+                    const messageBtn = document.getElementById("message-button");
+                    if (messageBtn) {
+                        messageBtn.style.display = "none";
+                    }
+                }
             }
         } catch (err) {
-            console.error("Ошибка при получении пользователя:", err);
+            console.error("Error when receiving the user:", err);
         }
     }
 
@@ -67,7 +64,7 @@
         });
 
         if (!itemsResponse.ok) {
-            console.error("Не удалось получить товары");
+            console.error("Did you manage to receive the goods");
             return;
         }
 
@@ -93,7 +90,6 @@
         <button class="details-btn">More Details</button>
     </div>
 `;
-
 
             productGrid.appendChild(card);
         });
@@ -126,16 +122,77 @@
                         showNotification("Product added to cart");
                     } else {
                         const err = await response.json();
-                        showNotification("Ошибка: " + (err.message || response.statusText));
+                        showNotification("Error: " + (err.message || response.statusText));
                     }
                 } catch (err) {
-                    console.error("Ошибка сети:", err);
-                    showNotification("Ошибка сети");
+                    console.error("Network error", err);
+                    showNotification("Network error");
                 }
             }
         });
 
     } catch (err) {
-        console.error("Ошибка при получении товаров:", err);
+        console.error("Error when receiving the goods:", err);
+    }
+});
+
+function showNotification(message) {
+    const notif = document.getElementById("notification");
+    notif.textContent = message;
+    notif.classList.add("show");
+    setTimeout(() => {
+        notif.classList.remove("show");
+    }, 1000);
+}
+
+const messageBtn = document.getElementById("message-button");
+const messageBox = document.getElementById("message-box");
+const sendBtn = document.getElementById("send-message");
+const cancelBtn = document.getElementById("cancel-message");
+const messageInput = document.getElementById("message-input");
+
+// Показать/скрыть окно
+messageBtn.addEventListener("click", () => {
+    messageBox.style.display = "flex";
+    messageInput.focus();
+});
+
+// Закрыть окно
+cancelBtn.addEventListener("click", () => {
+    messageInput.value = "";
+    messageBox.style.display = "none";
+});
+
+// Отправка сообщения
+sendBtn.addEventListener("click", async () => {
+    const messageText = messageInput.value.trim();
+    if (!messageText) {
+        showNotification("Message is empty");
+        return;
+    }
+
+    try {
+        const response = await fetch("/request/message/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: messageText
+            })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            showNotification("Message sent to admin");
+            messageInput.value = "";
+            messageBox.style.display = "none";
+        } else {
+            const error = await response.json();
+            showNotification("Error: " + (error.message || "Something went wrong"));
+        }
+    } catch (err) {
+        console.error("Failed to send message", err);
+        showNotification("Network error");
     }
 });

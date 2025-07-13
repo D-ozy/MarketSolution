@@ -134,6 +134,7 @@ main {
     font-weight: bold;
     cursor: pointer;
     color: white;
+    margin-left: 10px;
 }
 
 .edit-btn {

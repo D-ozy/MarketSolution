@@ -22,140 +22,56 @@ namespace market.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("MyMarketLibrary.Models.Cart", b =>
+            modelBuilder.Entity("MyMarketLibrary.Models.Request", b =>
                 {
                     b.Property<string>("id")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("user_id")
+                    b.Property<string>("adminId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("id");
-
-                    b.HasIndex("user_id");
-
-                    b.ToTable("carts");
-                });
-
-            modelBuilder.Entity("MyMarketLibrary.Models.CartsItem", b =>
-                {
-                    b.Property<string>("id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("cart_id")
+                    b.Property<string>("message")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
-                    b.Property<string>("item_id")
+                    b.Property<string>("reply")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
-                    b.Property<int>("quantity")
+                    b.Property<int>("status")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
-
-                    b.HasIndex("cart_id");
-
-                    b.HasIndex("item_id");
-
-                    b.ToTable("carts_item");
-                });
-
-            modelBuilder.Entity("MyMarketLibrary.Models.Item", b =>
-                {
-                    b.Property<string>("id")
+                    b.Property<string>("userId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("brand")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ico")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("price")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("specifications")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("type")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.HasKey("id");
 
-                    b.ToTable("items");
+                    b.HasIndex("adminId");
+
+                    b.HasIndex("userId");
+
+                    b.ToTable("requests");
                 });
 
-            modelBuilder.Entity("MyMarketLibrary.Models.User", b =>
+            modelBuilder.Entity("MyMarketLibrary.Models.Request", b =>
                 {
-                    b.Property<string>("id")
-                        .HasColumnType("varchar(255)");
+                    b.HasOne("MyMarketLibrary.Models.User", "admin")
+                        .WithMany()
+                        .HasForeignKey("adminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("login")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("password")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("role")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("id");
-
-                    b.ToTable("users");
-                });
-
-            modelBuilder.Entity("MyMarketLibrary.Models.Cart", b =>
-                {
                     b.HasOne("MyMarketLibrary.Models.User", "user")
                         .WithMany()
-                        .HasForeignKey("user_id")
+                        .HasForeignKey("userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("admin");
 
                     b.Navigation("user");
-                });
-
-            modelBuilder.Entity("MyMarketLibrary.Models.CartsItem", b =>
-                {
-                    b.HasOne("MyMarketLibrary.Models.Cart", "cart")
-                        .WithMany()
-                        .HasForeignKey("cart_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MyMarketLibrary.Models.Item", "item")
-                        .WithMany()
-                        .HasForeignKey("item_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("cart");
-
-                    b.Navigation("item");
                 });
 #pragma warning restore 612, 618
         }

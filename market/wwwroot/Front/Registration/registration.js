@@ -12,7 +12,7 @@ form.addEventListener('submit', async function (e) {
     successMessage.textContent = "";
 
     if (password.value !== confirmPassword.value) {
-        errorMessage.textContent = "Пароли не совпадают";
+        errorMessage.textContent = "passwords don't match";
         return;
     }
 
@@ -24,10 +24,10 @@ form.addEventListener('submit', async function (e) {
 
     try {
         const registeredUser = await registerUser(user);
-        successMessage.textContent = "Регистрация успешна!";
+        successMessage.textContent = "Registration succeeded!";
         form.reset();
     } catch (error) {
-        console.error("Ошибка регистрации:", error);
+        console.error("Registration mistake", error);
         errorMessage.textContent = error.message;
     }
 });
@@ -45,11 +45,11 @@ async function registerUser(userData) {
     try {
         data = await response.json();
     } catch {
-        throw new Error("Ошибка разбора ответа сервера");
+        throw new Error("Error parsing the server response");
     }
 
     if (!response.ok) {
-        throw new Error(data.message || "Ошибка при регистрации пользователя");
+        throw new Error(data.message || "Error during user registration");
     }
 
     return data;
