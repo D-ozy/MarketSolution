@@ -8,7 +8,7 @@ namespace MyMarketLibrary.Models.Enumerables
 {
     public enum RequestStatus
     {   
-        Open,
+        Open, 
         Progress,
         Closed
     }

@@ -60,6 +60,27 @@
                     <strong>Total:</strong> <span id="cart-total">0 $</span>
                 </div>
             </section>
+
+            <section class="requests-section">
+                <h2>Your Requests</h2>
+                <table class="requests-table">
+                    <thead>
+                        <tr class="requests-thead">
+                            <th>Admin</th>
+                            <th>Message</th>
+                            <th>Reply</th>
+                            <th>Status</th>
+                            <th>Actions</th> <!-- ✅ Новая колонка -->
+                        </tr>
+                    </thead>
+
+                    <tbody id="requests-table-body">
+                        <!-- Rows will be inserted here -->
+                    </tbody>
+                </table>
+            </section>
+
+
         </main>
     </div>
 
@@ -76,6 +97,19 @@
             <button id="cancel-message">Cancel</button>
         </div>
     </div>
+
+
+    <div id="update-request-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Edit Request Message</h3>
+            <textarea id="update-request-input" rows="4"></textarea>
+            <div class="modal-actions">
+                <button id="confirm-update-request">Save</button>
+                <button id="cancel-update-request">Cancel</button>
+            </div>
+        </div>
+    </div>
+
 
     <script src="account.js"></script>
 </body>

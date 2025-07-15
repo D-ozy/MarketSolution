@@ -17,6 +17,7 @@ namespace MyMarketLibrary.Models
         public string reply { get; set; }
         [Required]
         public RequestStatus status { get; set; }
+        public DateTime? closedDate { get; set; }
 
         public User user { get; set; }
         public User admin { get; set; }

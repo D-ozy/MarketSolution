@@ -1,5 +1,6 @@
 ﻿using market.DbContextFolder;
 using MyMarketLibrary.Models;
+using MyMarketLibrary.Models.Enumerables;
 
 namespace market.Middlewares
 {
@@ -18,6 +19,8 @@ namespace market.Middlewares
             HttpResponse response = context.Response;
             HttpRequest request = context.Request;
             PathString path = request.Path;
+
+            //await RemoveRequest(response);
 
             if (path == "/admin/user/get" && request.Method == "GET")
             {
@@ -45,7 +48,12 @@ namespace market.Middlewares
             }
             else if (path == "/admin/request/get" && request.Method == "GET")
             {
+                await RemoveRequest(response);
                 await GetRequest(response);
+            }
+            else if (path == "/admin/request/updateReply" && request.Method == "UPDATE")
+            {
+                await AddReplyToRequest(response, request);
             }
             else if (path == "/admin/item/remove" && request.Method == "DELETE")
             {
@@ -224,6 +232,57 @@ namespace market.Middlewares
             {
                 
                 await response.WriteAsJsonAsync(db.requests);
+            }
+        }
+
+        private async Task AddReplyToRequest(HttpResponse response, HttpRequest request)
+        {
+            string requestId = request.Query["RequestId"];
+
+            Request? requestData = await request.ReadFromJsonAsync<Request>();
+
+            if(requestData != null)
+            {
+                using(MarketDbContext db = new MarketDbContext())
+                {
+                    Request? userRequest = db.requests.FirstOrDefault(r => r.id == requestId);
+
+                    userRequest.reply = requestData.reply;
+                    userRequest.status = requestData.status;
+
+                    if(userRequest.status == RequestStatus.Closed)
+                        userRequest.closedDate = DateTime.Now;
+
+                    db.SaveChanges();
+
+                    await response.WriteAsJsonAsync(userRequest);
+                }
+            }
+            else
+            {
+                response.WriteAsJsonAsync(new { message = "Incorrected data" });
+            }
+        }
+
+        private async Task RemoveRequest(HttpResponse response)
+        {
+            using (MarketDbContext db = new MarketDbContext())
+            {
+                var cutoffDate = DateTime.Now.AddDays(-1);
+
+                var expiredClosedRequests = db.requests
+                    .Where(r => r.status == RequestStatus.Closed && r.closedDate <= cutoffDate)
+                    .ToList();
+
+                Console.WriteLine(expiredClosedRequests.Count());
+
+                if (expiredClosedRequests.Any())
+                {
+                    
+                    
+                    db.requests.RemoveRange(expiredClosedRequests);
+                    db.SaveChanges();
+                }
             }
         }
     }

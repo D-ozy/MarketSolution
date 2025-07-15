@@ -34,6 +34,14 @@ namespace market.Middlewares
             {
                 await RemoveItem(response, request);
             }
+            else if(request.Path == "/account/request/get" && request.Method == "GET")
+            {
+                await GetRequest(response, request);
+            }
+            else if(request.Path == "/account/request/update" && request.Method == "PUT")
+            {
+                await UpdateRequest(response, request);
+            }
             else
             {
                 await next.Invoke(context);
@@ -163,6 +171,65 @@ namespace market.Middlewares
                 }
 
                 db.SaveChanges();
+            }
+        }
+
+        private async Task GetRequest(HttpResponse response, HttpRequest request)
+        {
+            string userId = request.Cookies["UserId"];
+
+            using(MarketDbContext db = new MarketDbContext())
+            {
+                List<Request> userRequests = db.requests.Where(r => r.userId == userId).ToList();
+
+                if (userRequests.Count > 0)
+                {
+                    User? admin = await db.users.FirstOrDefaultAsync(a => a.id == userRequests[0].adminId);
+
+                    await response.WriteAsJsonAsync(new { admin.login, userRequests });
+                }
+                else
+                    await response.WriteAsJsonAsync(new { message = "REQUESTS NOT FOUND" });
+            }
+        }
+
+        private async Task UpdateRequest(HttpResponse response, HttpRequest request)
+        {
+            string requestId = request.Query["requestId"];
+
+            if (requestId != null)
+            {
+                Request? requestData = await request.ReadFromJsonAsync<Request>();
+
+                if (requestData != null)
+                {
+                    using (MarketDbContext db = new MarketDbContext())
+                    {
+                        Request? userRequest = db.requests.FirstOrDefault(r => r.id == requestId);
+
+                        if (userRequest != null)
+                        {
+                            userRequest.message = requestData.message;
+
+                            db.SaveChanges();
+
+                            await response.WriteAsJsonAsync(userRequest);
+                        }
+                        else
+                        {
+                            response.StatusCode = 404;
+                            await response.WriteAsJsonAsync( new { message = "USER NOT FOUND" });
+                        }
+                    }
+                }
+                else
+                {
+                    await response.WriteAsJsonAsync(new { message = "Incorrected data" });
+                }
+            }
+            else
+            {
+                await response.WriteAsJsonAsync(new { message = "Incorrected data" });
             }
         }
     }

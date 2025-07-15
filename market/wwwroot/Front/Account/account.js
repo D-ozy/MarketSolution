@@ -40,6 +40,54 @@ async function loadCartItems() {
     document.getElementById('cart-total').textContent = `${data.total} $`;
 }
 
+
+async function loadUserRequests() {
+    const res = await fetch('/account/request/get');
+    if (!res.ok) {
+        console.error('Failed to fetch user requests.');
+        return;
+    }
+
+    const data = await res.json();
+    const tableBody = document.getElementById('requests-table-body');
+    tableBody.innerHTML = '';
+
+    const statusMap = {
+        0: 'Open',
+        1: 'Progress',
+        2: 'Closed'
+    };
+
+    if (data.userRequests && data.userRequests.length > 0) {
+        data.userRequests.forEach(req => {
+            const row = document.createElement('tr');
+            const statusText = statusMap[req.status] ?? 'Unknown';
+
+            row.innerHTML = `
+                <td>${data.login}</td>
+                <td>${req.message || 'No message'}</td>
+                <td>${req.reply || 'No reply yet'}</td>
+                <td>${statusText}</td>
+                <td>
+                    <button class="update-request-btn" data-id="${req.id}" data-message="${req.message ?? ''}">Update</button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+
+        setupUpdateRequestButtons(); // ✅ переместим сюда, чтобы не было ошибки
+    } else {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="5">No requests found.</td>`;
+        tableBody.appendChild(row);
+    }
+}
+
+
+
+
+
 function setupRemoveButtons() {
     const buttons = document.querySelectorAll('.remove-btn');
     buttons.forEach(btn => {
@@ -153,6 +201,7 @@ async function sendMessage() {
 window.addEventListener('DOMContentLoaded', () => {
     loadUserData();
     loadCartItems().then(setupRemoveButtons);
+    loadUserRequests(); // ← ADD THIS LINE
 
     document.querySelector('.logout-btn').addEventListener('click', logout);
     document.querySelector('.edit-btn').addEventListener('click', openEditModal);
@@ -170,6 +219,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
 function showNotification(message) {
     const notif = document.getElementById("notification");
     notif.textContent = message;
@@ -178,3 +228,59 @@ function showNotification(message) {
         notif.classList.remove("show");
     }, 1000);
 }
+
+
+
+
+function setupUpdateRequestButtons() {
+    document.querySelectorAll('.update-request-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const requestId = btn.dataset.id;
+            const currentMessage = btn.dataset.message;
+
+            const modal = document.getElementById('update-request-modal');
+            const input = document.getElementById('update-request-input');
+            input.value = currentMessage;
+            modal.dataset.requestId = requestId;
+
+            modal.classList.remove('hidden');
+        });
+    });
+}
+
+
+document.getElementById('confirm-update-request').addEventListener('click', async () => {
+    const modal = document.getElementById('update-request-modal');
+    const newMessage = document.getElementById('update-request-input').value.trim();
+    const requestId = modal.dataset.requestId;
+
+    if (!newMessage) {
+        showNotification("Message cannot be empty.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`/account/request/update?requestId=${requestId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: newMessage })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            showNotification("Request updated.");
+            modal.classList.add('hidden');
+            loadUserRequests(); // refresh list
+        } else {
+            showNotification(data.message || 'Update failed.');
+        }
+    } catch (err) {
+        console.error("Update error", err);
+        showNotification("Network error");
+    }
+});
+
+document.getElementById('cancel-update-request').addEventListener('click', () => {
+    document.getElementById('update-request-modal').classList.add('hidden');
+});

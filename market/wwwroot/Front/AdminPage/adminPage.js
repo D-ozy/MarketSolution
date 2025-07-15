@@ -245,10 +245,7 @@ function getStatusText(status) {
 
 function renderRequests(requests) {
     const requestTable = document.getElementById('request-table');
-    if (!requestTable) {
-        console.error('Element with id "request-table" not found');
-        return;
-    }
+    if (!requestTable) return;
 
     if (requests.length === 0) {
         requestTable.innerHTML = '<p>No requests found.</p>';
@@ -256,31 +253,53 @@ function renderRequests(requests) {
     }
 
     let html = `
-    <table>
-      <thead>
-        <tr>
-          <th>User ID</th>
-          <th>Message</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
+<table>
+  <thead>
+    <tr>
+      <th>User ID</th>
+      <th>Message</th>
+      <th>Reply</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+`;
+
 
     requests.forEach(r => {
         html += `
-      <tr>
-        <td>${r.userId}</td>
-        <td>${r.message}</td>
-        <td>${getStatusText(r.status)}</td>
-      </tr>
-    `;
+    <tr>
+      <td>${r.userId}</td>
+      <td>${r.message}</td>
+      <td>${r.reply ?? '-'}</td>
+      <td>${getStatusText(r.status)}</td>
+      <td>
+        <button class="reply-btn" data-request-id="${r.id}" data-status="${r.status}" data-reply="${r.reply ?? ''}">Reply</button>
+      </td>
+    </tr>
+  `;
     });
 
-    html += '</tbody></table>';
 
+    html += '</tbody></table>';
     requestTable.innerHTML = html;
+
+    // Привязываем обработчики ко всем кнопкам Reply
+    document.querySelectorAll(".reply-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const requestId = btn.getAttribute("data-request-id");
+            const existingReply = btn.getAttribute("data-reply");
+            const existingStatus = btn.getAttribute("data-status");
+
+            document.getElementById("reply-text").value = existingReply || "";
+            document.getElementById("status-select").value = existingStatus || "0";
+            document.getElementById("reply-modal").style.display = "flex";
+            document.getElementById("send-reply-btn").setAttribute("data-request-id", requestId);
+        });
+    });
 }
+
 
 
 
@@ -472,5 +491,42 @@ document.getElementById("save-update-product-btn").addEventListener("click", () 
         })
         .catch(err => {
             alert("Error updating item: " + err.message);
+        });
+});
+
+
+
+
+document.getElementById("cancel-reply-btn").addEventListener("click", () => {
+    document.getElementById("reply-modal").style.display = "none";
+});
+
+document.getElementById("send-reply-btn").addEventListener("click", () => {
+    const requestId = document.getElementById("send-reply-btn").getAttribute("data-request-id");
+    const reply = document.getElementById("reply-text").value.trim();
+    const status = parseInt(document.getElementById("status-select").value);
+
+    if (!reply || isNaN(status)) {
+        alert("Fill all fields correctly.");
+        return;
+    }
+
+    fetch(`/admin/request/updateReply?RequestId=${requestId}`, {
+        method: "UPDATE",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ reply, status })
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to send reply.");
+            return res.json();
+        })
+        .then(() => {
+            document.getElementById("reply-modal").style.display = "none";
+            fetchRequests(); // перерисуем заявки
+        })
+        .catch(err => {
+            alert("Error: " + err.message);
         });
 });

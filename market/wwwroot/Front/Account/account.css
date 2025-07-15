@@ -272,6 +272,7 @@ form button {
 
 
 
+
 .home-btn {
     padding: 8px 16px;
     background-color: #4ea8ff;
@@ -400,3 +401,126 @@ form button {
         transform: translateX(-50%) translateY(0);
     }
 
+
+
+
+.requests-section {
+    margin-top: 50px; /* Увеличенный отступ сверху */
+    padding: 30px; /* Внутренние отступы */
+    background-color: #1e1e1e;
+    border-radius: 16px; /* Более мягкие углы */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Эффект всплытия */
+}
+
+    .requests-section h2 {
+        font-size: 1.8rem;
+        color: #ffffff;
+        margin-bottom: 20px;
+    }
+
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 1.05rem;
+}
+
+    .requests-table th,
+    .requests-table td {
+        border-bottom: 1px solid #333;
+        padding: 14px 18px; /* Увеличенный padding */
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .requests-table th {
+        background-color: #2a2a2a;
+        color: #4ea8ff;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+    }
+
+    .requests-table tr:hover {
+        background-color: #2c2c2c;
+        transition: background-color 0.3s ease;
+    }
+
+
+
+.modal.hidden {
+    display: none;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+.update-request-btn {
+    padding: 8px 16px;
+    background-color: #4ea8ff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+}
+
+#confirm-update-request {
+    padding: 8px 16px;
+    background-color: #4ea8ff;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    width: 17%;
+    transition: background-color 0.3s ease;
+}
+
+
+#cancel-update-request {
+    padding: 6px 12px;
+    background-color: #ff4d4d;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    width: 20%;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+
+#update-request-input {
+    background-color: rgb(21, 21, 21);
+    color: white;
+    border-radius: 6px;
+}
