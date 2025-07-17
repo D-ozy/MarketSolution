@@ -22,7 +22,7 @@
 
     // 🔽 Показываем имя пользователя в header и скрываем кнопку для admin
     if (userId && profileLink) {
-        fetch("https://localhost:7210/product/user/get", {
+        fetch("http://localhost:5085/product/user/get", {
             method: "GET",
             credentials: "include" // Важно: отправляет куки
         })
@@ -50,7 +50,7 @@
     if (buyNowBtn && itemId) {
         buyNowBtn.addEventListener("click", async () => {
             try {
-                const res = await fetch(`https://localhost:7210/product/item/add?id=${itemId}`, {
+                const res = await fetch(`http://localhost:5085/product/item/add?id=${itemId}`, {
                     method: "POST",
                     credentials: "include"
                 });
@@ -104,7 +104,7 @@
             }
 
             try {
-                const response = await fetch("https://localhost:7210/request/message/add", {
+                const response = await fetch("http://localhost:5085/request/message/add", {
                     method: "POST",
                     credentials: "include",
                     headers: {
@@ -153,7 +153,7 @@ function showNotification(message) {
 
 // 🔽 Загрузка информации о товаре
 function loadProduct(id) {
-    fetch(`https://localhost:7210/product/item/get?id=${id}`)
+    fetch(`http://localhost:5085/product/item/get?id=${id}`)
         .then(res => res.json())
         .then(data => {
             document.getElementById("product-name").textContent = data.name;
@@ -168,7 +168,7 @@ function loadProduct(id) {
 
             const img = document.getElementById("product-image");
             if (data.ico) {
-                img.src = "https://localhost:7210" + data.ico;
+                img.src = "http://localhost:5085" + data.ico;
                 img.style.display = "block";
             } else {
                 img.style.display = "none";
