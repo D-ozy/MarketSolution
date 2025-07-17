@@ -75,7 +75,7 @@ namespace market.Middlewares
 
                 if (admin.role != "admin")
                 {
-                    await response.WriteAsJsonAsync(new { message = "Fuck you!" });
+                    await response.WriteAsJsonAsync(new { message = "You not a admin" });
                 }
                 else
                 {
