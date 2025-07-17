@@ -33,7 +33,7 @@ form.addEventListener('submit', async function (e) {
 });
 
 async function registerUser(userData) {
-    const response = await fetch("https://localhost:7210/registration/user/add", {
+    const response = await fetch("http://localhost:5085/registration/user/add", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -1,0 +1,8 @@
+﻿version: '3.9'
+
+services:
+  market:
+    image: market
+    ports:
+      - "5085:5085"
+    restart: unless-stopped
