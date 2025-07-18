@@ -7,7 +7,7 @@
         event.preventDefault();
 
         if (!userId) {
-            window.location.href = "/Front/Login/login.html";
+            window.location.href = "/Front/LogIn/logIn.html";
             return;
         }
 
@@ -28,7 +28,7 @@
 
         } catch (err) {
             console.error("Error when receiving the user:", err);
-            window.location.href = "/Front/Login/login.html";
+            window.location.href = "/Front/LogIn/logIn.html";
         }
     });
 

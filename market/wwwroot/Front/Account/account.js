@@ -139,27 +139,52 @@ async function updateUser(e) {
     const email = document.getElementById('edit-email').value.trim();
     const password = document.getElementById('edit-password').value;
 
+    // Получаем элемент для отображения ошибок
+    const errorMessage = document.getElementById('edit-error-message');
+    if (errorMessage) errorMessage.textContent = "";
+
+    // Проверка: пароль не должен быть пустым
     if (!password) {
-        alshowNotificationert("The password field must not be empty.");
+        if (errorMessage) {
+            errorMessage.textContent = "The password field must not be empty.";
+        } else {
+            alert("The password field must not be empty.");
+        }
         return;
     }
 
-    const res = await fetch('/account/user/update', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login, email, password })
-    });
+    // Проверка: длина пароля
+    if (password.length < 8) {
+        if (errorMessage) {
+            errorMessage.textContent = "Password must be at least 8 characters long.";
+        } else {
+            alert("Password must be at least 8 characters long.");
+        }
+        return;
+    }
 
-    const data = await res.json();
+    try {
+        const res = await fetch('/account/user/update', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login, email, password })
+        });
 
-    if (res.ok) {
-        showNotification(data.message);
-        closeEditModal();
-        loadUserData();
-    } else {
-        showNotification(data.message || 'Error when updating');
+        const data = await res.json();
+
+        if (res.ok) {
+            showNotification(data.message);
+            closeEditModal();
+            loadUserData();
+        } else {
+            showNotification(data.message || 'Error when updating');
+        }
+    } catch (err) {
+        showNotification('Network or server error');
+        console.error(err);
     }
 }
+
 
 // ---------- 📨 MESSAGE FUNCTIONALITY ----------------
 

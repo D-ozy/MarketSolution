@@ -63,6 +63,7 @@ namespace market.Middlewares
                     db.requests.Add(requestMessage);    
                     db.SaveChanges();
 
+                    Console.WriteLine(admin.id);
                     await response.WriteAsJsonAsync(new { message = "Request created", requestId = requestMessage.id });
                 }
             }

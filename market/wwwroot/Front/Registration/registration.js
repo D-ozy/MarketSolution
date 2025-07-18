@@ -11,8 +11,15 @@ form.addEventListener('submit', async function (e) {
     errorMessage.textContent = "";
     successMessage.textContent = "";
 
+    // 🔒 Проверка: длина пароля
+    if (password.value.length < 8) {
+        errorMessage.textContent = "Password must be at least 8 characters long";
+        return;
+    }
+
+    // 🔐 Проверка: совпадение паролей
     if (password.value !== confirmPassword.value) {
-        errorMessage.textContent = "passwords don't match";
+        errorMessage.textContent = "Passwords don't match";
         return;
     }
 
@@ -33,7 +40,7 @@ form.addEventListener('submit', async function (e) {
 });
 
 async function registerUser(userData) {
-    const response = await fetch("http://localhost:5085/registration/user/add", {
+    const response = await fetch("https://marketsolution.onrender.com/registration/user/add", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

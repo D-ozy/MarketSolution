@@ -334,6 +334,22 @@ document.getElementById("save-user-btn").addEventListener("click", () => {
     const password = document.getElementById("edit-password").value;
     const role = document.getElementById("edit-role").value;
 
+    // Добавим элемент для вывода ошибки (предполагаем, что он уже есть в HTML)
+    const errorMessage = document.getElementById("edit-error-message");
+
+    // Очистим предыдущее сообщение об ошибке
+    if (errorMessage) errorMessage.textContent = "";
+
+    // Проверка длины пароля
+    if (password.length < 8) {
+        if (errorMessage) {
+            errorMessage.textContent = "Password must be at least 8 characters long";
+        } else {
+            alert("Password must be at least 8 characters long");
+        }
+        return;
+    }
+
     fetch(`/admin/user/update?UserId=${id}`, {
         method: "PUT",
         headers: {
@@ -353,6 +369,7 @@ document.getElementById("save-user-btn").addEventListener("click", () => {
             alert("Ошибка: " + err.message);
         });
 });
+
 
 let userIdToDelete = null;
 
@@ -512,7 +529,7 @@ document.getElementById("send-reply-btn").addEventListener("click", () => {
     }
 
     fetch(`/admin/request/updateReply?RequestId=${requestId}`, {
-        method: "UPDATE",
+        method: "PUT",
         headers: {
             "Content-Type": "application/json"
         },

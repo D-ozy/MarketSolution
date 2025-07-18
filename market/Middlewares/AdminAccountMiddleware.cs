@@ -1,6 +1,8 @@
 ﻿using market.DbContextFolder;
 using MyMarketLibrary.Models;
 using MyMarketLibrary.Models.Enumerables;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace market.Middlewares
 {
@@ -51,7 +53,7 @@ namespace market.Middlewares
                 await RemoveRequest(response);
                 await GetRequest(response);
             }
-            else if (path == "/admin/request/updateReply" && request.Method == "UPDATE")
+            else if (path == "/admin/request/updateReply" && request.Method == "PUT")
             {
                 await AddReplyToRequest(response, request);
             }
@@ -100,7 +102,7 @@ namespace market.Middlewares
                     {
                         user.login = userData.login;
                         user.email = userData.email;
-                        user.password = userData.password;
+                        user.password = AddHash(userData.password);
                         user.role = userData.role;
 
                         db.SaveChanges();
@@ -260,7 +262,7 @@ namespace market.Middlewares
             }
             else
             {
-                response.WriteAsJsonAsync(new { message = "Incorrected data" });
+                await response.WriteAsJsonAsync(new { message = "Incorrected data" });
             }
         }
 
@@ -283,6 +285,18 @@ namespace market.Middlewares
                     db.requests.RemoveRange(expiredClosedRequests);
                     db.SaveChanges();
                 }
+            }
+
+        }
+
+        public string AddHash(string pass)
+        {
+            byte[] temp = Encoding.UTF8.GetBytes(pass);
+
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                var hash = sha256.ComputeHash(temp);
+                return Convert.ToBase64String(hash);
             }
         }
     }

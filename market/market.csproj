@@ -6,23 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\Front\Main\Ico\Game console.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\Headphone.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\Laptop.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\Monitor.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\PC.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\Phone.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\Refrigerator.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\TV.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\UPS.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\Vacuum cleaner.png" />
-    <Content Remove="wwwroot\Front\Main\Ico\Washing machine.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Dockerfile" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />

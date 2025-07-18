@@ -1,6 +1,8 @@
 ﻿using market.DbContextFolder;
 using Microsoft.EntityFrameworkCore;
 using MyMarketLibrary.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace market.Middlewares
 {
@@ -63,7 +65,7 @@ namespace market.Middlewares
                     {
                         user.login = userData.login;
                         user.email = userData.email;
-                        user.password = userData.password;
+                        user.password = AddHash(userData.password);
 
                         db.SaveChanges();
                         await response.WriteAsJsonAsync(new { message = "User updated successfully" });
@@ -230,6 +232,17 @@ namespace market.Middlewares
             else
             {
                 await response.WriteAsJsonAsync(new { message = "Incorrected data" });
+            }
+        }
+
+        public string AddHash(string pass)
+        {
+            byte[] temp = Encoding.UTF8.GetBytes(pass);
+
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                var hash = sha256.ComputeHash(temp);
+                return Convert.ToBase64String(hash);
             }
         }
     }
