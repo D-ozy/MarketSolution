@@ -82,22 +82,84 @@
 
     <div id="add-product-modal" class="modal">
         <div class="modal-content">
-            <h3>Add New Product</h3>
-            <label>Name: <input type="text" id="product-name" /></label>
-            <label>Type: <input type="text" id="product-type" /></label>
-            <label>Price: <input type="number" id="product-price" /></label>
-            <label>Quantity: <input type="number" id="product-quantity" /></label>
-            <label>Brand: <input type="text" id="product-brand" /></label>
-            <label>Ico link: <input type="text" id="product-ico" /></label>
-            <label>Specification: <input type="text" id="product-specification" /></label>
 
+            <!-- Блок формы добавления товара -->
+            <div id="product-form-section">
+                <h3>Add New Product</h3>
+                <label>Name: <input type="text" id="product-name" /></label>
+                <label>Type: <input type="text" id="product-type" /></label>
+                <label>Price: <input type="number" id="product-price" /></label>
+                <label>Quantity: <input type="number" id="product-quantity" /></label>
+                <label>Brand: <input type="text" id="product-brand" /></label>
+                <label>Ico link: <input type="text" id="product-ico" /></label>
+                <label>Specification: <input type="text" id="product-specification" /></label>
 
-            <div class="modal-actions">
-                <button id="submit-product-btn" class="action-btn">Add</button>
-                <button id="cancel-product-btn" class="remove-btn">Cancel</button>
+                <div class="modal-actions">
+                    <button id="toggle-upload-section-btn" class="action-btn" type="button">Upload Images</button>
+                    <button id="submit-product-btn" class="action-btn">Add</button>
+                    <button id="cancel-product-btn" class="remove-btn">Cancel</button>
+                </div>
             </div>
+
+            <!-- Блок загрузки изображений -->
+            <div id="image-upload-section" style="display:none; flex-direction: column; gap: 10px;">
+                <h3>Upload Images (Max 5)</h3>
+                <div class="file-upload-wrapper">
+                    <label class="action-btn-image">
+                        Выбрать изображение
+                        <input type="file" class="image-file" accept="image/*" hidden />
+                    </label>
+                    <span class="file-name">Файл не выбран</span>
+                </div>
+
+
+                <div class="file-upload-wrapper">
+                    <label class="action-btn-image">
+                        Выбрать изображение
+                        <input type="file" class="image-file" accept="image/*" hidden />
+                    </label>
+                    <span class="file-name">Файл не выбран</span>
+                </div>
+
+
+                <div class="file-upload-wrapper">
+                    <label class="action-btn-image">
+                        Выбрать изображение
+                        <input type="file" class="image-file" accept="image/*" hidden />
+                    </label>
+                    <span class="file-name">Файл не выбран</span>
+                </div>
+
+
+                <div class="file-upload-wrapper">
+                    <label class="action-btn-image">
+                        Выбрать изображение
+                        <input type="file" class="image-file" accept="image/*" hidden />
+                    </label>
+                    <span class="file-name">Файл не выбран</span>
+                </div>
+
+
+                <div class="file-upload-wrapper">
+                    <label class="action-btn-image">
+                        Выбрать изображение
+                        <input type="file" class="image-file" accept="image/*" hidden />
+                    </label>
+                    <span class="file-name">Файл не выбран</span>
+                </div>
+
+
+                <div class="modal-actions">
+                    <button id="upload-images-btn" class="action-btn">Upload</button>
+                    <button id="back-to-form-btn" class="remove-btn">Back</button>
+                </div>
+                <div id="upload-status" style="color: green; font-weight: bold;"></div>
+            </div>
+
         </div>
     </div>
+
+
 
 
     <div id="update-product-modal" class="modal" style="display:none; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);">

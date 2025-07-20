@@ -57,6 +57,10 @@ namespace market.Middlewares
             {
                 await AddReplyToRequest(response, request);
             }
+            else if (path == "/admin/img/add" && request.Method == "POST")
+            {
+                await UploadImage(response, request);
+            }
             else if (path == "/admin/item/remove" && request.Method == "DELETE")
             {
                 await RemoveItem(response, request);
@@ -289,7 +293,26 @@ namespace market.Middlewares
 
         }
 
-        public string AddHash(string pass)
+        private async Task UploadImage(HttpResponse response, HttpRequest request)
+        {
+            IFormFileCollection images = request.Form.Files;
+
+            string uploadPath = $"{Directory.GetCurrentDirectory()}/wwwroot/Front/Main/Ico";
+
+            foreach (var img in images)
+            {
+                string fullPath = Path.Combine(uploadPath, img.FileName);
+                using (FileStream stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await img.CopyToAsync(stream);
+                }
+            }
+
+            await response.WriteAsJsonAsync(new { message = "Files uploaded successfully" });
+
+        }
+
+        private string AddHash(string pass)
         {
             byte[] temp = Encoding.UTF8.GetBytes(pass);
 

@@ -547,3 +547,90 @@ document.getElementById("send-reply-btn").addEventListener("click", () => {
             alert("Error: " + err.message);
         });
 });
+
+
+
+
+
+
+// Открытие формы загрузки картинок
+// Переключение на форму загрузки
+document.getElementById("toggle-upload-section-btn").addEventListener("click", () => {
+    document.getElementById("product-form-section").style.display = "none";
+    document.getElementById("image-upload-section").style.display = "flex";
+});
+
+// Назад к форме товара
+document.getElementById("back-to-form-btn").addEventListener("click", () => {
+    document.getElementById("image-upload-section").style.display = "none";
+    document.getElementById("product-form-section").style.display = "block";
+    document.getElementById("upload-status").innerText = "";
+});
+
+
+
+// Загрузка изображений
+document.getElementById("upload-images-btn").addEventListener("click", () => {
+    const fileInputs = document.querySelectorAll(".image-file");
+    const formData = new FormData();
+    let totalFiles = 0;
+
+    fileInputs.forEach((input) => {
+        if (input.files.length > 0) {
+            for (const file of input.files) {
+                formData.append("files", file);
+                totalFiles++;
+            }
+        }
+    });
+
+    if (totalFiles === 0) {
+        alert("Please select at least one image.");
+        return;
+    }
+
+    if (totalFiles > 5) {
+        alert("You can upload a maximum of 5 images.");
+        return;
+    }
+
+    fetch("/admin/img/add", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Upload failed.");
+            return res.json();
+        })
+        .then(data => {
+            document.getElementById("upload-status").innerText = "Upload successful.";
+
+            // ✅ Очистка всех полей
+            fileInputs.forEach(input => {
+                input.value = ""; // Очистить выбранные файлы
+            });
+
+            // ✅ Если есть превью — удалить (если используешь)
+            const previewContainer = document.getElementById("preview-container");
+            if (previewContainer) {
+                previewContainer.innerHTML = "";
+            }
+        })
+        .catch(err => {
+            document.getElementById("upload-status").innerText = "Error: " + err.message;
+        });
+});
+
+
+
+document.querySelectorAll('.image-file').forEach(input => {
+    input.addEventListener('change', function () {
+        const fileNameSpan = this.closest('.file-upload-wrapper').querySelector('.file-name');
+        if (this.files.length > 0) {
+            fileNameSpan.textContent = this.files[0].name;
+        } else {
+            fileNameSpan.textContent = "Файл не выбран";
+        }
+    });
+});

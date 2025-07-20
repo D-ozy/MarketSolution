@@ -309,3 +309,6 @@ document.getElementById('confirm-update-request').addEventListener('click', asyn
 document.getElementById('cancel-update-request').addEventListener('click', () => {
     document.getElementById('update-request-modal').classList.add('hidden');
 });
+
+
+

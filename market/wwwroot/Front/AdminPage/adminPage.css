@@ -278,3 +278,26 @@ main {
     color: white;
     margin-left: 10px;
 }
+
+
+
+.file-name {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #555;
+    font-style: italic;
+}
+
+.action-btn-image {
+    background-color: transparent;
+    border: solid 2px, #297eff;
+    width: 70%;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 
+}
+
+    .action-btn-image:hover {
+        background-color: #297eff;
+    }
